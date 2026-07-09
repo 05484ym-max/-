@@ -146,6 +146,12 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
   text-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 14px rgba(156,122,46,0.3);
 }
 .cat-card span{ font-size:.72rem; color:var(--text-dim); }
+.cat-card .tap-hint{
+  display:block; margin-top:8px; font-size:.66rem; letter-spacing:.5px;
+  color:var(--accent-gold-soft); opacity:.75; font-weight:500;
+  transition:opacity .25s, transform .25s;
+}
+.cat-card:hover .tap-hint{ opacity:1; transform:translateX(-3px); }
 
 /* ריבועים קטנים יותר, ממורכזים בעמודה צרה יותר */
 .grid{ max-width:400px; margin:0 auto; }
@@ -336,7 +342,7 @@ function buildCard(c, onClick){
   const visual = c.img
     ? `<div class="cat-photo" style="background-image:url('${c.img.replace(/'/g,"\\'")}')"></div><div class="cat-overlay"></div>`
     : `<div class="shine"></div><div class="icon"><svg><use href="#${categoryIcon(c.id)}"></use></svg></div>`;
-  el.innerHTML = `${visual}<h3>${c.title}</h3><span>${c.sub||''}</span>`;
+  el.innerHTML = `${visual}<h3>${c.title}</h3><span>${c.sub||''}</span><span class="tap-hint">לחץ כאן ⟵</span>`;
   return el;
 }
 
