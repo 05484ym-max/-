@@ -59,6 +59,8 @@ main{ max-width:1200px; margin:0 auto; padding:24px 18px; display:grid; grid-tem
 .cat-tab.active{ border-color:var(--accent-gold); color:var(--accent-gold-soft); background:rgba(201,162,75,0.1); }
 .cat-tab .del-cat{ opacity:.5; font-size:.75rem; }
 .cat-tab .del-cat:hover{ opacity:1; color:var(--danger); }
+.cat-tab .edit-cat{ opacity:.5; font-size:.75rem; }
+.cat-tab .edit-cat:hover{ opacity:1; color:var(--accent-gold-soft); }
 .add-cat-row{ display:flex; gap:8px; margin-top:6px; }
 .add-cat-row input{ flex:1; }
 
@@ -74,6 +76,7 @@ main{ max-width:1200px; margin:0 auto; padding:24px 18px; display:grid; grid-tem
   background:linear-gradient(150deg,var(--royal-blue-2),var(--deep-blue));
   display:flex; align-items:center; justify-content:center; font-size:1.1rem;
 }
+.prod-item .th .noimg{ width:14px; height:14px; border-radius:3px; border:1.3px solid var(--text-dim); opacity:.5; }
 .prod-item .th img{ width:100%; height:100%; object-fit:cover; }
 .prod-item .info{ flex:1; min-width:0; }
 .prod-item .info .nm{ font-size:.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -172,6 +175,28 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
   </div>
 </div>
 
+<div class="gh-panel" id="catEditPanel">
+  <div class="gh-box glass">
+    <h2>עריכת קטגוריה</h2>
+    <label>שם הקטגוריה</label>
+    <input type="text" id="ce_title" placeholder="לדוגמה: מוצרים">
+    <label>תת-כותרת (טקסט קטן מתחת לשם)</label>
+    <input type="text" id="ce_sub" placeholder="לדוגמה: מכשירים חדשים">
+    <label>תמונת רקע לריבוע</label>
+    <div class="img-drop" id="ceImgDrop" onclick="document.getElementById('ce_imgFile').click()"></div>
+    <input type="file" id="ce_imgFile" accept="image/*" onchange="handleCatImgFile(this)">
+    <div class="img-url-row">
+      <input type="url" id="ce_imgUrl" placeholder="או הדביקו קישור לתמונה מהאינטרנט...">
+      <button class="btn-ghost" onclick="useCatImgUrl()">שימוש בקישור</button>
+    </div>
+    <p style="margin-top:10px;">אם לא תעלו תמונה, יוצג אייקון קו אלגנטי ברירת מחדל במקום.</p>
+    <div class="form-actions">
+      <button class="btn-gold" onclick="saveCategoryEdit()">💾 שמירה</button>
+      <button class="btn-ghost" onclick="closeCatEdit()">סגירה</button>
+    </div>
+  </div>
+</div>
+
 <main>
   <!-- LEFT: categories + product list -->
   <div class="panel glass">
@@ -207,6 +232,39 @@ function toast(msg, isErr){
   t.textContent = msg; t.classList.add('show');
   t.classList.toggle('err', !!isErr);
   setTimeout(()=>t.classList.remove('show'), isErr?3200:1800);
+}
+
+/* ================= Image compression =================
+   כל תמונה שמועלית מוקטנת/נדחסת אוטומטית לפני שמירה, כדי שלא
+   תיצור קובץ ענק (במיוחד תמונות ישירות ממצלמת טלפון שיכולות
+   להיות כמה MB) שגורם לכשלים בהעלאה/פרסום ל-GitHub. */
+const MAX_IMG_DIMENSION = 1000; // פיקסלים, בצד הארוך
+const IMG_QUALITY = 0.75;       // איכות JPEG (0-1)
+
+function compressImageFile(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = ()=>reject(new Error('קריאת הקובץ נכשלה'));
+    reader.onload = e=>{
+      const img = new Image();
+      img.onerror = ()=>reject(new Error('טעינת התמונה נכשלה'));
+      img.onload = ()=>{
+        let { width, height } = img;
+        if(width > height && width > MAX_IMG_DIMENSION){
+          height = Math.round(height * (MAX_IMG_DIMENSION/width)); width = MAX_IMG_DIMENSION;
+        } else if(height >= width && height > MAX_IMG_DIMENSION){
+          width = Math.round(width * (MAX_IMG_DIMENSION/height)); height = MAX_IMG_DIMENSION;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', IMG_QUALITY));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 /* ================= GitHub connection ================= */
@@ -328,7 +386,7 @@ function renderCatTabs(){
   DATA.categories.forEach(c=>{
     const el = document.createElement('div');
     el.className = 'cat-tab' + (c.id===activeCat?' active':'');
-    el.innerHTML = `<span onclick="selectCat('${c.id}')">${c.icon||'📦'} ${c.title}</span> <span class="del-cat" onclick="deleteCategory('${c.id}')">✕</span>`;
+    el.innerHTML = `<span onclick="selectCat('${c.id}')">${c.title}</span> <span class="edit-cat" onclick="openCatEdit('${c.id}')" title="עריכה">✎</span> <span class="del-cat" onclick="deleteCategory('${c.id}')">✕</span>`;
     box.appendChild(el);
   });
 }
@@ -339,7 +397,7 @@ function addCategory(){
   const name = input.value.trim();
   if(!name) return;
   const id = slugify(name);
-  DATA.categories.push({ id, title:name, sub:"", icon:"📦" });
+  DATA.categories.push({ id, title:name, sub:"", img:"" });
   DATA.products[id] = [];
   input.value='';
   activeCat = id;
@@ -354,6 +412,62 @@ function deleteCategory(id){
   renderCatTabs(); renderProdList(); showEmptyForm();
 }
 
+/* ================= Category image/edit ================= */
+let catEditId = null;
+let draftCatImg = "";
+function openCatEdit(id){
+  const cat = DATA.categories.find(c=>c.id===id);
+  if(!cat) return;
+  catEditId = id;
+  draftCatImg = cat.img || "";
+  document.getElementById('ce_title').value = cat.title || "";
+  document.getElementById('ce_sub').value = cat.sub || "";
+  document.getElementById('ce_imgUrl').value = "";
+  updateCatImgPreview();
+  document.getElementById('catEditPanel').classList.add('open');
+
+  const drop = document.getElementById('ceImgDrop');
+  drop.ondragover = e=>{ e.preventDefault(); drop.style.borderColor='var(--accent-gold)'; };
+  drop.ondragleave = ()=>{ drop.style.borderColor='var(--glass-border)'; };
+  drop.ondrop = e=>{
+    e.preventDefault(); drop.style.borderColor='var(--glass-border)';
+    if(e.dataTransfer.files[0]) readCatImgFile(e.dataTransfer.files[0]);
+  };
+}
+function closeCatEdit(){ document.getElementById('catEditPanel').classList.remove('open'); }
+function updateCatImgPreview(){
+  document.getElementById('ceImgDrop').innerHTML = draftCatImg
+    ? `<img src="${draftCatImg}">`
+    : `<div class="ph">לחצו כאן או גררו תמונה להעלאה</div>`;
+}
+function handleCatImgFile(input){ if(input.files[0]) readCatImgFile(input.files[0]); }
+function readCatImgFile(file){
+  compressImageFile(file).then(dataUrl=>{
+    draftCatImg = dataUrl;
+    updateCatImgPreview();
+    toast('התמונה נדחסה והוכנה ✓');
+  }).catch(err=>{
+    toast('שגיאה בעיבוד התמונה: '+err.message, true);
+  });
+}
+function useCatImgUrl(){
+  const url = document.getElementById('ce_imgUrl').value.trim();
+  if(!url) return;
+  draftCatImg = url; updateCatImgPreview();
+}
+function saveCategoryEdit(){
+  const cat = DATA.categories.find(c=>c.id===catEditId);
+  if(!cat) return;
+  const title = document.getElementById('ce_title').value.trim();
+  if(!title){ alert('נא להזין שם קטגוריה'); return; }
+  cat.title = title;
+  cat.sub = document.getElementById('ce_sub').value.trim();
+  cat.img = draftCatImg;
+  renderCatTabs();
+  closeCatEdit();
+  toast('הקטגוריה עודכנה ✓ — לחצו "פרסום ישירות לאתר"');
+}
+
 function renderProdList(){
   const box = document.getElementById('prodList');
   box.innerHTML = '';
@@ -362,9 +476,9 @@ function renderProdList(){
   list.forEach((p,i)=>{
     const el = document.createElement('div');
     el.className = 'prod-item' + (editingIndex===i?' active':'');
-    el.innerHTML = `<div class="th">${p.img?`<img src="${p.img}">`:(p.icon||'📦')}</div>
+    el.innerHTML = `<div class="th">${p.img?`<img src="${p.img}">`:'<span class="noimg"></span>'}</div>
       <div class="info" onclick="editProduct(${i})"><div class="nm">${p.name}</div><div class="pr">₪${(p.price||0).toLocaleString()}</div></div>
-      <div class="rm" onclick="deleteProduct(${i})">🗑️</div>`;
+      <div class="rm" onclick="deleteProduct(${i})" title="מחיקה">🗑</div>`;
     box.appendChild(el);
   });
 }
@@ -376,7 +490,7 @@ function showEmptyForm(){
 function newProduct(){
   if(!activeCat){ alert('קודם בחרו או צרו קטגוריה'); return; }
   editingIndex = null; draftImg = "";
-  renderForm({ name:"", price:"", icon:"📦", img:"", specs:[["",""]] });
+  renderForm({ name:"", price:"", img:"", specs:[["",""]] });
 }
 function editProduct(i){
   editingIndex = i; draftImg = (DATA.products[activeCat][i].img)||"";
@@ -403,7 +517,7 @@ function renderForm(p){
 
     <label>תמונה</label>
     <div class="img-drop" id="imgDrop" onclick="document.getElementById('f_imgFile').click()">
-      ${draftImg ? `<img src="${draftImg}">` : `<div class="ph">📷 לחצו כאן או גררו תמונה להעלאה</div>`}
+      ${draftImg ? `<img src="${draftImg}">` : `<div class="ph">לחצו כאן או גררו תמונה להעלאה</div>`}
       <div class="ph">${draftImg? 'לחצו כדי להחליף תמונה':''}</div>
     </div>
     <input type="file" id="f_imgFile" accept="image/*" onchange="handleImgFile(this)">
@@ -412,15 +526,12 @@ function renderForm(p){
       <button class="btn-ghost" onclick="useImgUrl()">שימוש בקישור</button>
     </div>
 
-    <label>אמוג׳י ברירת מחדל (אם אין תמונה)</label>
-    <input type="text" id="f_icon" value="${p.icon||'📦'}" maxlength="4" style="width:80px;">
-
     <label>מפרט המוצר</label>
     <div class="specs-box" id="specsBox"></div>
     <button class="btn-ghost" style="margin-top:10px; width:100%;" onclick="addSpecRow()">+ הוספת שורת מפרט</button>
 
     <div class="form-actions">
-      <button class="btn-gold" onclick="saveProduct()">💾 שמירה</button>
+      <button class="btn-gold" onclick="saveProduct()">שמירה</button>
       <button class="btn-ghost" onclick="showEmptyForm()">ביטול</button>
     </div>
   `;
@@ -449,12 +560,13 @@ function addSpecRow(key="", val=""){
 
 function handleImgFile(input){ if(input.files[0]) readImgFile(input.files[0]); }
 function readImgFile(file){
-  const reader = new FileReader();
-  reader.onload = e=>{
-    draftImg = e.target.result; // base64 data URL - embedded directly, no external file needed
+  compressImageFile(file).then(dataUrl=>{
+    draftImg = dataUrl;
     document.getElementById('imgDrop').innerHTML = `<img src="${draftImg}"><div class="ph">לחצו כדי להחליף תמונה</div>`;
-  };
-  reader.readAsDataURL(file);
+    toast('התמונה נדחסה והוכנה ✓');
+  }).catch(err=>{
+    toast('שגיאה בעיבוד התמונה: '+err.message, true);
+  });
 }
 function useImgUrl(){
   const url = document.getElementById('f_imgUrl').value.trim();
@@ -466,13 +578,12 @@ function useImgUrl(){
 function saveProduct(){
   const name = document.getElementById('f_name').value.trim();
   const price = parseFloat(document.getElementById('f_price').value)||0;
-  const icon = document.getElementById('f_icon').value.trim()||'📦';
   if(!name){ alert('נא להזין שם מוצר'); return; }
   const specs = [...document.querySelectorAll('.spec-edit-row')].map(r=>{
     return [r.querySelector('.spec-key').value.trim(), r.querySelector('.spec-val').value.trim()];
   }).filter(s=>s[0]||s[1]);
 
-  const product = { name, price, icon, img:draftImg, specs };
+  const product = { name, price, img:draftImg, specs };
   if(!DATA.products[activeCat]) DATA.products[activeCat]=[];
   if(editingIndex===null){ DATA.products[activeCat].push(product); }
   else { DATA.products[activeCat][editingIndex] = product; }
