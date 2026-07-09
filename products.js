@@ -1,4 +1,4 @@
-/* קובץ מוצרים - BLACK PHONE - עודכן 9.7.2026, 18:00:13 */
+/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 1:45:10 */
 
 const CATEGORIES = [
   {
@@ -42,6 +42,12 @@ const CATEGORIES = [
   {
     "id": "cat_מסכים_dh3",
     "title": "מסכים",
+    "sub": "",
+    "img": ""
+  },
+  {
+    "id": "cat_חסימות_ikp",
+    "title": "חסימות",
     "sub": "",
     "img": ""
   }
@@ -325,5 +331,6 @@ const PRODUCTS = {
       "img": "",
       "specs": []
     }
-  ]
+  ],
+  "cat_חסימות_ikp": []
 };
