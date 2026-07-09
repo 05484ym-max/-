@@ -1,4 +1,4 @@
-/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 1:45:10 */
+/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 1:46:52 */
 
 const CATEGORIES = [
   {
@@ -23,7 +23,15 @@ const CATEGORIES = [
         "id": "smartphones",
         "title": "סמארטפונים",
         "sub": "מכשירים חכמים",
-        "img": ""
+        "img": "",
+        "children": [
+          {
+            "id": "cat_גלאקסי_wwl",
+            "title": "גלאקסי",
+            "sub": "",
+            "img": ""
+          }
+        ]
       }
     ]
   },
@@ -332,5 +340,6 @@ const PRODUCTS = {
       "specs": []
     }
   ],
-  "cat_חסימות_ikp": []
+  "cat_חסימות_ikp": [],
+  "cat_גלאקסי_wwl": []
 };
