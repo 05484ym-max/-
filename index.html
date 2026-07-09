@@ -296,7 +296,7 @@ footer b{ color:var(--accent-gold-soft); }
   </section>
 
   <section id="subcat-view">
-    <button class="back-btn" onclick="goHome()">← חזרה לדף הבית</button>
+    <button class="back-btn" onclick="goBackFromSubcat()">← חזרה</button>
     <h2 class="section-title" id="subcatTitle"></h2>
     <div class="grid" id="subcatGrid"></div>
   </section>
@@ -349,10 +349,12 @@ function buildCard(c, onClick){
 // ---------- render top-level categories ----------
 const catGrid = document.getElementById('catGrid');
 CATEGORIES.forEach(c=>{
-  catGrid.appendChild(buildCard(c, ()=>openTopCategory(c)));
+  catGrid.appendChild(buildCard(c, ()=>openNode(c)));
 });
 
-let lastBackTarget = 'home'; // איפה כפתור החזרה מתצוגת המוצרים אמור לנחות
+// מחסנית הניווט - כל צומת שנכנסנו לתוכו (עם children) נכנס לכאן,
+// כך שאפשר לתמוך בעומק בלתי מוגבל של תתי-קטגוריות
+let navStack = [];
 
 function hideAllViews(){
   document.getElementById('home-view').style.display = 'none';
@@ -360,23 +362,24 @@ function hideAllViews(){
   document.getElementById('products-view').style.display = 'none';
 }
 
-function openTopCategory(c){
-  if(c.children && c.children.length){
-    openSubcatView(c);
+// פותח צומת כלשהו בעץ - אם יש לו children מציג עוד ריבועים, אחרת מציג מוצרים
+function openNode(node){
+  if(node.children && node.children.length){
+    navStack.push(node);
+    renderSubcatView(node);
   } else {
-    lastBackTarget = 'home';
-    openProducts(c.id, c.title);
+    openProducts(node.id, node.title);
   }
 }
 
-function openSubcatView(c){
+function renderSubcatView(node){
   hideAllViews();
   document.getElementById('subcat-view').style.display = 'block';
-  document.getElementById('subcatTitle').textContent = c.title;
+  document.getElementById('subcatTitle').textContent = node.title;
   const grid = document.getElementById('subcatGrid');
   grid.innerHTML = '';
-  c.children.forEach(child=>{
-    grid.appendChild(buildCard(child, ()=>{ lastBackTarget = { parent:c }; openProducts(child.id, child.title); }));
+  node.children.forEach(child=>{
+    grid.appendChild(buildCard(child, ()=>openNode(child)));
   });
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -397,15 +400,26 @@ function openProducts(id, title){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
+// חזרה מרשימת מוצרים - חוזר לרמת תתי-הקטגוריות האחרונה (אם יש), אחרת הביתה
 function goBackFromProducts(){
-  if(lastBackTarget && lastBackTarget.parent){
-    openSubcatView(lastBackTarget.parent);
+  if(navStack.length){
+    renderSubcatView(navStack[navStack.length-1]);
+  } else {
+    goHome();
+  }
+}
+// חזרה מתצוגת תתי-קטגוריות - עולה רמה אחת למעלה בעץ, או הביתה אם היינו ברמה הראשונה
+function goBackFromSubcat(){
+  navStack.pop();
+  if(navStack.length){
+    renderSubcatView(navStack[navStack.length-1]);
   } else {
     goHome();
   }
 }
 
 function goHome(){
+  navStack = [];
   hideAllViews();
   document.getElementById('home-view').style.display = 'block';
   window.scrollTo({top:0, behavior:'smooth'});

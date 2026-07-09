@@ -63,6 +63,25 @@ main{ max-width:1200px; margin:0 auto; padding:24px 18px; display:grid; grid-tem
 .cat-tab .edit-cat:hover{ opacity:1; color:var(--accent-gold-soft); }
 .add-cat-row{ display:flex; gap:8px; margin-top:6px; }
 .add-cat-row input{ flex:1; }
+.struct-parent{
+  border:1px solid var(--glass-border); border-radius:12px; padding:10px 12px; margin-bottom:10px;
+}
+.struct-parent .p-title{ font-size:.85rem; font-weight:700; margin-bottom:6px; color:var(--accent-gold-soft); }
+.struct-parent .p-title small{ color:var(--text-dim); font-weight:400; font-size:.72rem; }
+.struct-children{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.struct-chip{
+  display:flex; align-items:center; gap:6px; padding:5px 10px; border-radius:16px; font-size:.75rem;
+  background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);
+}
+.struct-chip .rm-chip{ opacity:.5; cursor:pointer; }
+.struct-chip .rm-chip:hover{ opacity:1; color:var(--danger); }
+.struct-add-row{ display:flex; gap:6px; }
+.struct-add-row input{ flex:1; font-size:.8rem; padding:8px 10px; }
+.struct-add-row button{ font-size:.75rem; padding:8px 12px; }
+.struct-none{ font-size:.72rem; color:var(--text-dim); }
+.struct-hint{ font-size:.75rem; color:var(--text-dim); margin-bottom:10px; line-height:1.6; }
+.struct-tree-node{ margin-right:0; }
+.struct-tree-children{ margin-right:16px; border-right:1px dashed var(--glass-border); padding-right:12px; margin-top:8px; }
 
 /* product list */
 .prod-list{ display:flex; flex-direction:column; gap:8px; max-height:520px; overflow-y:auto; }
@@ -200,12 +219,16 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
 <main>
   <!-- LEFT: categories + product list -->
   <div class="panel glass">
-    <h2>קטגוריות</h2>
+    <h2>בחירת קטגוריה לעריכת מוצרים</h2>
     <div class="cat-tabs" id="catTabs"></div>
-    <div class="add-cat-row">
-      <input type="text" id="newCatName" placeholder="שם קטגוריה חדשה...">
-      <button class="btn-ghost" onclick="addCategory()">+ הוסף</button>
+
+    <h2 style="margin-top:22px;">מבנה הריבועים באתר</h2>
+    <p class="struct-hint">כאן בונים את כל מבנה הריבועים: מוסיפים ריבוע חדש לדף הבית, או תת-ריבוע בתוך כל קטגוריה קיימת (בכל עומק) — למשל "כשרים" ו"לא כשרים" בתוך "סלולר".</p>
+    <div class="struct-add-row" style="margin-bottom:14px;">
+      <input type="text" id="newRootName" placeholder="שם ריבוע חדש לדף הבית...">
+      <button class="btn-gold" onclick="addRootCategory()">+ ריבוע לדף הבית</button>
     </div>
+    <div id="structureBox"></div>
 
     <h2 style="margin-top:22px;">מוצרים בקטגוריה</h2>
     <button class="btn-gold" style="width:100%; margin-bottom:12px;" onclick="newProduct()">+ מוצר / שירות חדש</button>
@@ -380,33 +403,42 @@ function slugify(str){
   return 'cat_' + str.trim().replace(/[^\u0590-\u05FFa-zA-Z0-9]+/g,'_').slice(0,20) + '_' + Math.random().toString(36).slice(2,5);
 }
 
-// מחזיר רשימה "שטוחה" של כל הקטגוריות שבאמת מחזיקות מוצרים -
-// אם לקטגוריה יש children, מציגים את הילדים שלה במקומה (לא אותה עצמה)
+// עוברת על כל עץ הקטגוריות ומפעילה visit(node, parent) על כל צומת
+function walkTree(nodes, visit, parent){
+  nodes.forEach(n=>{
+    visit(n, parent||null);
+    if(n.children && n.children.length) walkTree(n.children, visit, n);
+  });
+}
+
+// מחזיר רשימה "שטוחה" של כל הקטגוריות שבאמת מחזיקות מוצרים (עלים בעץ, בכל עומק)
 function leafCategories(){
   const out = [];
-  DATA.categories.forEach(c=>{
-    if(c.children && c.children.length){
-      c.children.forEach(child=>out.push(child));
-    } else {
-      out.push(c);
-    }
-  });
+  walkTree(DATA.categories, (n)=>{ if(!n.children || n.children.length===0) out.push(n); });
   return out;
 }
-// מוצא קטגוריה (ראשית או מקוננת) לפי id, למטרות עריכה/מחיקה
+// מוצא קטגוריה לפי id בכל עומק בעץ
 function findCategory(id){
-  for(const c of DATA.categories){
-    if(c.id===id) return c;
-    if(c.children){
-      const child = c.children.find(ch=>ch.id===id);
-      if(child) return child;
-    }
-  }
-  return null;
+  let found = null;
+  walkTree(DATA.categories, (n)=>{ if(n.id===id) found = n; });
+  return found;
 }
-// מוצא את "ההורה" של קטגוריה מקוננת, אם יש
+// מוצא את ההורה הישיר של קטגוריה (null אם היא ברמה הראשית)
 function findParentOf(id){
-  return DATA.categories.find(c=>c.children && c.children.some(ch=>ch.id===id)) || null;
+  let p = null;
+  walkTree(DATA.categories, (n, parent)=>{ if(n.id===id) p = parent; });
+  return p;
+}
+// מחזיר את המערך שבו נמצא הצומת בפועל (DATA.categories או children של מישהו)
+function findContainerArray(id){
+  const p = findParentOf(id);
+  return p ? p.children : DATA.categories;
+}
+// אוסף את ה-id של צומת וכל צאצאיו (למחיקה מלאה)
+function collectIds(node){
+  let ids = [node.id];
+  if(node.children) node.children.forEach(ch=>{ ids = ids.concat(collectIds(ch)); });
+  return ids;
 }
 
 function renderCatTabs(){
@@ -418,11 +450,63 @@ function renderCatTabs(){
     el.innerHTML = `<span onclick="selectCat('${c.id}')">${c.title}</span> <span class="edit-cat" onclick="openCatEdit('${c.id}')" title="עריכה">✎</span> <span class="del-cat" onclick="deleteCategory('${c.id}')">✕</span>`;
     box.appendChild(el);
   });
+  renderStructure();
 }
-function selectCat(id){ activeCat=id; editingIndex=null; renderCatTabs(); renderProdList(); showEmptyForm(); }
 
-function addCategory(){
-  const input = document.getElementById('newCatName');
+// מציג את כל עץ הקטגוריות (בכל עומק), עם אפשרות הוספת תת-קטגוריה בכל רמה
+function renderStructure(){
+  const box = document.getElementById('structureBox');
+  if(!box) return;
+  box.innerHTML = '';
+  DATA.categories.forEach(c=> box.appendChild(renderStructNode(c)));
+}
+function renderStructNode(c){
+  const hasChildren = c.children && c.children.length;
+  const wrap = document.createElement('div');
+  wrap.className = 'struct-parent struct-tree-node';
+  wrap.innerHTML = `
+    <div class="p-title">
+      ${c.title} <small>${hasChildren ? '(קטגוריית-על)' : '(פותחת ישר רשימת מוצרים)'}</small>
+      <span class="edit-cat" onclick="openCatEdit('${c.id}')" title="עריכה">✎</span>
+      <span class="del-cat" onclick="deleteCategory('${c.id}')" title="מחיקה">✕</span>
+    </div>
+    <div class="struct-add-row">
+      <input type="text" id="subadd-${c.id}" placeholder="הוספת תת-ריבוע בתוך ${c.title}...">
+      <button class="btn-ghost" onclick="addSubcategory('${c.id}')">+ הוספה</button>
+    </div>
+    <div class="struct-tree-children" id="children-${c.id}"></div>
+  `;
+  if(hasChildren){
+    const childBox = wrap.querySelector(`#children-${c.id}`);
+    c.children.forEach(ch=> childBox.appendChild(renderStructNode(ch)));
+  }
+  return wrap;
+}
+
+function addSubcategory(parentId){
+  const input = document.getElementById('subadd-'+parentId);
+  const name = input.value.trim();
+  if(!name) return;
+  const parent = findCategory(parentId);
+  if(!parent) return;
+  const isFirstChild = !parent.children || parent.children.length===0;
+  const hasExistingProducts = (DATA.products[parent.id]||[]).length > 0;
+  if(isFirstChild && hasExistingProducts){
+    const ok = confirm(`ל"${parent.title}" יש כרגע ${DATA.products[parent.id].length} מוצרים ישירים. הוספת תת-קטגוריה תהפוך אותה לקטגוריית-על, והמוצרים הקיימים לא יופיעו יותר עד שתעבירו אותם ידנית לתת-קטגוריה. להמשיך בכל זאת?`);
+    if(!ok) return;
+  }
+  if(!parent.children) parent.children = [];
+  const id = slugify(name);
+  parent.children.push({ id, title:name, sub:"", img:"" });
+  DATA.products[id] = [];
+  input.value = '';
+  activeCat = id;
+  renderCatTabs(); renderProdList(); showEmptyForm();
+  toast(`"${name}" נוספה בתוך "${parent.title}" ✓`);
+}
+
+function addRootCategory(){
+  const input = document.getElementById('newRootName');
   const name = input.value.trim();
   if(!name) return;
   const id = slugify(name);
@@ -431,18 +515,21 @@ function addCategory(){
   input.value='';
   activeCat = id;
   renderCatTabs(); renderProdList(); showEmptyForm();
-  toast('קטגוריה נוספה ✓');
+  toast(`"${name}" נוסף כריבוע חדש לדף הבית ✓`);
 }
+
+function selectCat(id){ activeCat=id; editingIndex=null; renderCatTabs(); renderProdList(); showEmptyForm(); }
+
 function deleteCategory(id){
-  if(!confirm('למחוק את הקטגוריה וכל המוצרים בתוכה?')) return;
-  const parent = findParentOf(id);
-  if(parent){
-    parent.children = parent.children.filter(ch=>ch.id!==id);
-  } else {
-    DATA.categories = DATA.categories.filter(c=>c.id!==id);
-  }
-  delete DATA.products[id];
-  if(activeCat===id) activeCat = leafCategories()[0]?.id || null;
+  const node = findCategory(id);
+  if(!node) return;
+  const label = (node.children && node.children.length) ? 'הקטגוריה, כל תתי-הקטגוריות שבתוכה וכל המוצרים' : 'הקטגוריה וכל המוצרים בתוכה';
+  if(!confirm(`למחוק את ${label}?`)) return;
+  const arr = findContainerArray(id);
+  const idx = arr.findIndex(c=>c.id===id);
+  if(idx>-1) arr.splice(idx,1);
+  collectIds(node).forEach(i=> delete DATA.products[i]);
+  if(collectIds(node).includes(activeCat)) activeCat = leafCategories()[0]?.id || null;
   renderCatTabs(); renderProdList(); showEmptyForm();
 }
 
