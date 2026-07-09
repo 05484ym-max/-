@@ -63,17 +63,27 @@ body::before{
 }
 
 .logo{
-  display:inline-flex; align-items:baseline; justify-content:center;
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
   direction:ltr;
   font-family:'Cormorant Garamond', serif;
-  font-weight:600;
   cursor:pointer;
   color:var(--accent-gold-soft);
   text-shadow:0 1px 1px rgba(0,0,0,0.35), 0 0 24px rgba(156,122,46,0.45);
 }
-.logo .cap{ font-size:5.2rem; line-height:1; }
-.logo .small{ font-size:2.5rem; letter-spacing:2px; font-weight:500; }
-.logo .gap{ width:.28em; display:inline-block; }
+.logo-icon{ width:2.6rem; height:2.6rem; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.1; flex-shrink:0; }
+.logo .lg-black{ font-size:3.4rem; font-weight:800; line-height:1; }
+.logo .lg-phone{ font-size:3.4rem; font-weight:400; line-height:1; }
+.phone-line{
+  margin-top:18px; font-size:1.05rem; letter-spacing:1px; color:var(--text-main);
+  direction:ltr; unicode-bidi:isolate;
+}
+.wa-btn{
+  margin-top:16px; padding:12px 30px; border:none; border-radius:30px; cursor:pointer;
+  font-family:'Heebo',sans-serif; font-weight:700; font-size:.92rem;
+  background:linear-gradient(100deg, var(--accent-gold), var(--accent-gold-soft));
+  color:#1a1204; transition:filter .2s;
+}
+.wa-btn:hover{ filter:brightness(1.08); }
 .back-btn{
   display:inline-flex; align-items:center; gap:6px;
   color:var(--accent-gold-soft); background:rgba(255,255,255,0.04);
@@ -97,7 +107,7 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 @media(min-width:640px){ .grid{grid-template-columns:repeat(4,1fr); gap:22px;} }
 
 .cat-card{
-  position:relative; aspect-ratio:1/0.85; padding:16px;
+  position:relative; aspect-ratio:1/0.78; padding:12px;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center;
   cursor:pointer; overflow:hidden;
@@ -138,10 +148,11 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 .cat-card span{ font-size:.72rem; color:var(--text-dim); }
 
 /* ריבועים קטנים יותר, ממורכזים בעמודה צרה יותר */
-.grid{ max-width:460px; margin:0 auto; }
+.grid{ max-width:400px; margin:0 auto; }
 
 /* ===== Products view ===== */
 #products-view{ display:none; }
+#subcat-view{ display:none; }
 .section-title{
   font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600;
   margin-bottom:22px; color:var(--accent-gold-soft);
@@ -267,14 +278,25 @@ footer b{ color:var(--accent-gold-soft); }
 <main>
   <section id="home-view">
     <div class="hero">
-      <div class="logo" onclick="goHome()"><span class="cap">B</span><span class="small">lack</span><span class="gap"></span><span class="cap">P</span><span class="small">hone</span></div>
+      <div class="logo" onclick="goHome()">
+        <svg class="logo-icon"><use href="#icon-phone"></use></svg>
+        <span class="lg-black">Black</span><span class="lg-phone">phone</span>
+      </div>
       <p>המקום שלכם למכשירים, תיקונים ואבזרים ברמה הכי גבוהה</p>
+      <div class="phone-line">☎ 053-987-2593</div>
+      <button class="wa-btn" onclick="sendGeneralWhatsapp()">יצירת קשר בוואטסאפ</button>
     </div>
     <div class="grid" id="catGrid"></div>
   </section>
 
+  <section id="subcat-view">
+    <button class="back-btn" onclick="goHome()">← חזרה לדף הבית</button>
+    <h2 class="section-title" id="subcatTitle"></h2>
+    <div class="grid" id="subcatGrid"></div>
+  </section>
+
   <section id="products-view">
-    <button class="back-btn" id="backBtn" onclick="goHome()">← חזרה לדף הבית</button>
+    <button class="back-btn" id="backBtn" onclick="goBackFromProducts()">← חזרה</button>
     <h2 class="section-title" id="prodTitle"></h2>
     <div class="product-grid" id="prodGrid"></div>
   </section>
@@ -289,12 +311,12 @@ footer b{ color:var(--accent-gold-soft); }
 <script>
 // ⚙️ מספר הוואטסאפ של החנות - כתבו כאן עם קידומת מדינה, בלי + ובלי אפסים מובילים
 // לדוגמה: מספר ישראלי 050-123-4567 → יש לכתוב 972501234567
-const WHATSAPP_NUMBER = "972500000000"; // 👈 שנו למספר האמיתי שלכם
+const WHATSAPP_NUMBER = "972539872593";
 </script>
 <script src="products.js"></script>
 <script>
 // מזהה SVG לכל קטגוריה - אפשר להוסיף התאמות לקטגוריות חדשות כאן
-const CATEGORY_ICONS = { lab:'icon-tool', products:'icon-phone', accessories:'icon-headphones', kosher:'icon-seal' };
+const CATEGORY_ICONS = { lab:'icon-tool', products:'icon-phone', accessories:'icon-headphones', kosher:'icon-seal', cellular:'icon-phone', cellular_kosher:'icon-seal', smartphones:'icon-phone' };
 function categoryIcon(id){ return CATEGORY_ICONS[id] || 'icon-gem'; }
 
 // מחזיר HTML לתצוגת תמונה של מוצר — אם יש img מוצגת תמונה, אחרת אייקון תמונה אלגנטי
@@ -306,23 +328,56 @@ function thumbContent(p){
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ---------- render categories ----------
-const catGrid = document.getElementById('catGrid');
-CATEGORIES.forEach(c=>{
+// בונה כרטיס ריבוע (משמש גם לקטגוריות ראשיות וגם לתת-קטגוריות)
+function buildCard(c, onClick){
   const el = document.createElement('div');
   el.className = 'cat-card glass';
-  el.onclick = ()=>openCategory(c.id, c.title);
+  el.onclick = onClick;
   const visual = c.img
     ? `<div class="cat-photo" style="background-image:url('${c.img.replace(/'/g,"\\'")}')"></div><div class="cat-overlay"></div>`
     : `<div class="shine"></div><div class="icon"><svg><use href="#${categoryIcon(c.id)}"></use></svg></div>`;
-  el.innerHTML = `${visual}<h3>${c.title}</h3><span>${c.sub}</span>`;
-  catGrid.appendChild(el);
+  el.innerHTML = `${visual}<h3>${c.title}</h3><span>${c.sub||''}</span>`;
+  return el;
+}
+
+// ---------- render top-level categories ----------
+const catGrid = document.getElementById('catGrid');
+CATEGORIES.forEach(c=>{
+  catGrid.appendChild(buildCard(c, ()=>openTopCategory(c)));
 });
 
-function openCategory(id, title){
+let lastBackTarget = 'home'; // איפה כפתור החזרה מתצוגת המוצרים אמור לנחות
+
+function hideAllViews(){
   document.getElementById('home-view').style.display = 'none';
+  document.getElementById('subcat-view').style.display = 'none';
+  document.getElementById('products-view').style.display = 'none';
+}
+
+function openTopCategory(c){
+  if(c.children && c.children.length){
+    openSubcatView(c);
+  } else {
+    lastBackTarget = 'home';
+    openProducts(c.id, c.title);
+  }
+}
+
+function openSubcatView(c){
+  hideAllViews();
+  document.getElementById('subcat-view').style.display = 'block';
+  document.getElementById('subcatTitle').textContent = c.title;
+  const grid = document.getElementById('subcatGrid');
+  grid.innerHTML = '';
+  c.children.forEach(child=>{
+    grid.appendChild(buildCard(child, ()=>{ lastBackTarget = { parent:c }; openProducts(child.id, child.title); }));
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function openProducts(id, title){
+  hideAllViews();
   document.getElementById('products-view').style.display = 'block';
-  document.getElementById('backBtn').style.display = 'flex';
   document.getElementById('prodTitle').textContent = title;
   const grid = document.getElementById('prodGrid');
   grid.innerHTML = '';
@@ -336,10 +391,17 @@ function openCategory(id, title){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
+function goBackFromProducts(){
+  if(lastBackTarget && lastBackTarget.parent){
+    openSubcatView(lastBackTarget.parent);
+  } else {
+    goHome();
+  }
+}
+
 function goHome(){
+  hideAllViews();
   document.getElementById('home-view').style.display = 'block';
-  document.getElementById('products-view').style.display = 'none';
-  document.getElementById('backBtn').style.display = 'none';
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -361,6 +423,11 @@ function openModal(p){
 }
 function sendToWhatsapp(name, price){
   const msg = `שלום! אני מעוניין/ת לקבל פרטים על: ${name} (₪${price.toLocaleString()})`;
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+function sendGeneralWhatsapp(){
+  const msg = `שלום! אשמח לקבל פרטים נוספים על החנות`;
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
 }

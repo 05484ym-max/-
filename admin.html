@@ -223,7 +223,7 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
 <script src="products.js"></script>
 <script>
 let DATA = { categories: (typeof CATEGORIES!=='undefined'?CATEGORIES:[]), products: (typeof PRODUCTS!=='undefined'?PRODUCTS:{}) };
-let activeCat = DATA.categories[0]?.id || null;
+let activeCat = leafCategories()[0]?.id || null;
 let editingIndex = null; // null = new product
 let draftImg = "";
 
@@ -331,7 +331,7 @@ async function tryLoadFromGitHub(){
     const fn = new Function(code + '; return {CATEGORIES, PRODUCTS};');
     const result = fn();
     DATA = { categories: result.CATEGORIES, products: result.PRODUCTS };
-    activeCat = DATA.categories[0]?.id || null;
+    activeCat = leafCategories()[0]?.id || null;
     editingIndex = null;
     renderCatTabs(); renderProdList(); showEmptyForm();
   }catch(e){ /* silent - fall back to embedded data */ }
@@ -380,10 +380,39 @@ function slugify(str){
   return 'cat_' + str.trim().replace(/[^\u0590-\u05FFa-zA-Z0-9]+/g,'_').slice(0,20) + '_' + Math.random().toString(36).slice(2,5);
 }
 
+// מחזיר רשימה "שטוחה" של כל הקטגוריות שבאמת מחזיקות מוצרים -
+// אם לקטגוריה יש children, מציגים את הילדים שלה במקומה (לא אותה עצמה)
+function leafCategories(){
+  const out = [];
+  DATA.categories.forEach(c=>{
+    if(c.children && c.children.length){
+      c.children.forEach(child=>out.push(child));
+    } else {
+      out.push(c);
+    }
+  });
+  return out;
+}
+// מוצא קטגוריה (ראשית או מקוננת) לפי id, למטרות עריכה/מחיקה
+function findCategory(id){
+  for(const c of DATA.categories){
+    if(c.id===id) return c;
+    if(c.children){
+      const child = c.children.find(ch=>ch.id===id);
+      if(child) return child;
+    }
+  }
+  return null;
+}
+// מוצא את "ההורה" של קטגוריה מקוננת, אם יש
+function findParentOf(id){
+  return DATA.categories.find(c=>c.children && c.children.some(ch=>ch.id===id)) || null;
+}
+
 function renderCatTabs(){
   const box = document.getElementById('catTabs');
   box.innerHTML = '';
-  DATA.categories.forEach(c=>{
+  leafCategories().forEach(c=>{
     const el = document.createElement('div');
     el.className = 'cat-tab' + (c.id===activeCat?' active':'');
     el.innerHTML = `<span onclick="selectCat('${c.id}')">${c.title}</span> <span class="edit-cat" onclick="openCatEdit('${c.id}')" title="עריכה">✎</span> <span class="del-cat" onclick="deleteCategory('${c.id}')">✕</span>`;
@@ -406,9 +435,14 @@ function addCategory(){
 }
 function deleteCategory(id){
   if(!confirm('למחוק את הקטגוריה וכל המוצרים בתוכה?')) return;
-  DATA.categories = DATA.categories.filter(c=>c.id!==id);
+  const parent = findParentOf(id);
+  if(parent){
+    parent.children = parent.children.filter(ch=>ch.id!==id);
+  } else {
+    DATA.categories = DATA.categories.filter(c=>c.id!==id);
+  }
   delete DATA.products[id];
-  if(activeCat===id) activeCat = DATA.categories[0]?.id || null;
+  if(activeCat===id) activeCat = leafCategories()[0]?.id || null;
   renderCatTabs(); renderProdList(); showEmptyForm();
 }
 
@@ -416,7 +450,7 @@ function deleteCategory(id){
 let catEditId = null;
 let draftCatImg = "";
 function openCatEdit(id){
-  const cat = DATA.categories.find(c=>c.id===id);
+  const cat = findCategory(id);
   if(!cat) return;
   catEditId = id;
   draftCatImg = cat.img || "";
@@ -456,7 +490,7 @@ function useCatImgUrl(){
   draftCatImg = url; updateCatImgPreview();
 }
 function saveCategoryEdit(){
-  const cat = DATA.categories.find(c=>c.id===catEditId);
+  const cat = findCategory(catEditId);
   if(!cat) return;
   const title = document.getElementById('ce_title').value.trim();
   if(!title){ alert('נא להזין שם קטגוריה'); return; }
@@ -612,7 +646,7 @@ document.getElementById('importFile').addEventListener('change', function(e){
       const fn = new Function(code + '; return {CATEGORIES, PRODUCTS};');
       const result = fn();
       DATA = { categories: result.CATEGORIES, products: result.PRODUCTS };
-      activeCat = DATA.categories[0]?.id || null;
+      activeCat = leafCategories()[0]?.id || null;
       editingIndex = null;
       renderCatTabs(); renderProdList(); showEmptyForm();
       toast('הקובץ יובא בהצלחה ✓');
