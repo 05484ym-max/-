@@ -1,4 +1,4 @@
-/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 1:46:52 */
+/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 1:49:09 */
 
 const CATEGORIES = [
   {
@@ -340,6 +340,13 @@ const PRODUCTS = {
       "specs": []
     }
   ],
-  "cat_חסימות_ikp": [],
+  "cat_חסימות_ikp": [
+    {
+      "name": "הדרן",
+      "price": 300,
+      "img": "",
+      "specs": []
+    }
+  ],
   "cat_גלאקסי_wwl": []
 };
