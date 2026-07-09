@@ -108,6 +108,20 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
 .form-actions{ display:flex; gap:10px; margin-top:22px; }
 .form-actions button{ flex:1; }
 
+.gh-panel{
+  position:fixed; inset:0; background:rgba(2,6,18,0.7); backdrop-filter:blur(6px);
+  display:none; align-items:center; justify-content:center; z-index:200; padding:20px;
+}
+.gh-panel.open{ display:flex; }
+.gh-box{ width:100%; max-width:420px; padding:24px; max-height:90vh; overflow-y:auto; }
+.gh-box h2{ font-family:'Cormorant Garamond',serif; color:var(--accent-gold-soft); margin-bottom:6px; }
+.gh-box p{ font-size:.78rem; color:var(--text-dim); margin-bottom:16px; line-height:1.6; }
+.gh-status{
+  display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:10px; font-size:.78rem;
+  margin-bottom:14px;
+}
+.gh-status.ok{ background:rgba(76,175,125,0.12); color:var(--ok); }
+.gh-status.off{ background:rgba(255,255,255,0.05); color:var(--text-dim); }
 .empty-hint{ color:var(--text-dim); font-size:.85rem; text-align:center; padding:40px 10px; }
 .toast{
   position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
@@ -116,6 +130,7 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
   opacity:0; pointer-events:none; transition:.3s; z-index:100;
 }
 .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+.toast.err{ background:var(--danger); color:#2a0808; }
 </style>
 </head>
 <body>
@@ -123,11 +138,39 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
 <header>
   <div class="logo">BLACK<b>PHONE</b><small>ניהול מוצרים ושירותים</small></div>
   <div class="hdr-actions">
-    <label class="btn-ghost" for="importFile" style="display:inline-block;">📂 ייבוא products.js</label>
+    <button class="btn-ghost" onclick="openGhPanel()">⚙️ חיבור ל-GitHub</button>
+    <label class="btn-ghost" for="importFile" style="display:inline-block;">📂 ייבוא ידני</label>
     <input type="file" id="importFile" accept=".js">
-    <button class="btn-gold" onclick="exportData()">⬇️ הורדת products.js מעודכן</button>
+    <button class="btn-gold" id="publishBtn" onclick="publishToGitHub()">🚀 פרסום ישירות לאתר</button>
+    <button class="btn-ghost" onclick="exportData()">⬇️ הורדת קובץ</button>
   </div>
 </header>
+
+<div class="gh-panel" id="ghPanel">
+  <div class="gh-box glass">
+    <h2>חיבור ל-GitHub</h2>
+    <p>
+      זה יאפשר לכם ללחוץ "פרסום ישירות לאתר" ולעדכן את החנות בלי להוריד/להעלות קבצים בעצמכם.<br><br>
+      1. ב-GitHub: לחצו על תמונת הפרופיל ⟵ <b>Settings</b> ⟵ <b>Developer settings</b> ⟵ <b>Personal access tokens</b> ⟵ <b>Fine-grained tokens</b> ⟵ <b>Generate new token</b><br>
+      2. תחת "Repository access" בחרו <b>Only select repositories</b> ואת הריפו שלכם בלבד<br>
+      3. תחת "Permissions" ⟵ <b>Contents</b> ⟵ בחרו <b>Read and write</b><br>
+      4. Generate token, והעתיקו אותו לכאן (הוא נשמר רק בדפדפן שלכם, לא נשלח לשום מקום חוץ מ-GitHub)
+    </p>
+    <div class="gh-status off" id="ghStatus">לא מחובר</div>
+    <label>שם המשתמש / הארגון ב-GitHub</label>
+    <input type="text" id="gh_owner" placeholder="לדוגמה: 05484ym-max">
+    <label>שם הריפו (Repository)</label>
+    <input type="text" id="gh_repo" placeholder="לדוגמה: -">
+    <label>שם ה-branch</label>
+    <input type="text" id="gh_branch" placeholder="main" value="main">
+    <label>Personal Access Token</label>
+    <input type="text" id="gh_token" placeholder="ghp_xxxxxxxxxxxx">
+    <div class="form-actions">
+      <button class="btn-gold" onclick="saveGhSettings()">💾 שמירת חיבור</button>
+      <button class="btn-ghost" onclick="closeGhPanel()">סגירה</button>
+    </div>
+  </div>
+</div>
 
 <main>
   <!-- LEFT: categories + product list -->
@@ -159,10 +202,120 @@ let activeCat = DATA.categories[0]?.id || null;
 let editingIndex = null; // null = new product
 let draftImg = "";
 
-function toast(msg){
+function toast(msg, isErr){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 1800);
+  t.classList.toggle('err', !!isErr);
+  setTimeout(()=>t.classList.remove('show'), isErr?3200:1800);
+}
+
+/* ================= GitHub connection ================= */
+function ghSettings(){
+  try{ return JSON.parse(localStorage.getItem('bp_gh_settings')||'{}'); }catch(e){ return {}; }
+}
+function openGhPanel(){
+  const s = ghSettings();
+  document.getElementById('gh_owner').value = s.owner||'';
+  document.getElementById('gh_repo').value = s.repo||'';
+  document.getElementById('gh_branch').value = s.branch||'main';
+  document.getElementById('gh_token').value = s.token||'';
+  updateGhStatusUI();
+  document.getElementById('ghPanel').classList.add('open');
+}
+function closeGhPanel(){ document.getElementById('ghPanel').classList.remove('open'); }
+function updateGhStatusUI(){
+  const s = ghSettings();
+  const el = document.getElementById('ghStatus');
+  if(s.owner && s.repo && s.token){
+    el.className = 'gh-status ok';
+    el.textContent = `✓ מחובר ל- ${s.owner}/${s.repo} (branch: ${s.branch||'main'})`;
+  } else {
+    el.className = 'gh-status off';
+    el.textContent = 'לא מחובר — פרסום ישיר לא יעבוד עד שתתחברו';
+  }
+}
+function saveGhSettings(){
+  const s = {
+    owner: document.getElementById('gh_owner').value.trim(),
+    repo: document.getElementById('gh_repo').value.trim(),
+    branch: document.getElementById('gh_branch').value.trim()||'main',
+    token: document.getElementById('gh_token').value.trim(),
+  };
+  if(!s.owner || !s.repo || !s.token){ alert('נא למלא שם משתמש, שם ריפו וטוקן'); return; }
+  localStorage.setItem('bp_gh_settings', JSON.stringify(s));
+  updateGhStatusUI();
+  toast('החיבור נשמר ✓');
+  closeGhPanel();
+  tryLoadFromGitHub();
+}
+
+function b64EncodeUnicode(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function b64DecodeUnicode(str){
+  return decodeURIComponent(escape(atob(str)));
+}
+function buildFileContent(){
+  return `/* קובץ מוצרים - BLACK PHONE - עודכן ${new Date().toLocaleString('he-IL')} */\n\nconst CATEGORIES = ${JSON.stringify(DATA.categories, null, 2)};\n\nconst PRODUCTS = ${JSON.stringify(DATA.products, null, 2)};\n`;
+}
+
+// טוען את products.js העדכני ביותר ישירות מהריפו (כדי לא לדרוס שינויים של מישהו אחר)
+async function tryLoadFromGitHub(){
+  const s = ghSettings();
+  if(!(s.owner && s.repo && s.token)) return;
+  try{
+    const res = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/products.js?ref=${encodeURIComponent(s.branch||'main')}`, {
+      headers:{ 'Authorization':`token ${s.token}`, 'Accept':'application/vnd.github+json' }
+    });
+    if(!res.ok) return;
+    const json = await res.json();
+    const code = b64DecodeUnicode(json.content.replace(/\n/g,''));
+    const fn = new Function(code + '; return {CATEGORIES, PRODUCTS};');
+    const result = fn();
+    DATA = { categories: result.CATEGORIES, products: result.PRODUCTS };
+    activeCat = DATA.categories[0]?.id || null;
+    editingIndex = null;
+    renderCatTabs(); renderProdList(); showEmptyForm();
+  }catch(e){ /* silent - fall back to embedded data */ }
+}
+
+async function publishToGitHub(){
+  const s = ghSettings();
+  if(!(s.owner && s.repo && s.token)){ openGhPanel(); return; }
+  const btn = document.getElementById('publishBtn');
+  const oldLabel = btn.textContent;
+  btn.textContent = '⏳ מפרסם...'; btn.disabled = true;
+  try{
+    // 1) get current sha (required by GitHub API to update a file)
+    const getRes = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/products.js?ref=${encodeURIComponent(s.branch||'main')}`, {
+      headers:{ 'Authorization':`token ${s.token}`, 'Accept':'application/vnd.github+json' }
+    });
+    let sha = undefined;
+    if(getRes.ok){ const j = await getRes.json(); sha = j.sha; }
+    else if(getRes.status !== 404){ throw new Error('שגיאה בקריאת הקובץ הקיים ('+getRes.status+')'); }
+
+    // 2) push updated content
+    const content = buildFileContent();
+    const putRes = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/products.js`, {
+      method:'PUT',
+      headers:{ 'Authorization':`token ${s.token}`, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        message:'עדכון מוצרים דרך admin.html',
+        content: b64EncodeUnicode(content),
+        branch: s.branch||'main',
+        ...(sha?{sha}:{})
+      })
+    });
+    if(!putRes.ok){
+      const errJson = await putRes.json().catch(()=>({}));
+      throw new Error(errJson.message || ('שגיאת שרת ('+putRes.status+')'));
+    }
+    toast('פורסם בהצלחה לאתר החי ✓ (עשוי לקחת דקה להתעדכן)');
+  }catch(e){
+    toast('שגיאה בפרסום: '+e.message, true);
+  }finally{
+    btn.textContent = oldLabel; btn.disabled = false;
+  }
 }
 
 function slugify(str){
@@ -325,11 +478,11 @@ function saveProduct(){
   else { DATA.products[activeCat][editingIndex] = product; }
 
   renderProdList(); showEmptyForm();
-  toast('נשמר בהצלחה ✓ — לא לשכוח ללחוץ "הורדת products.js" בסיום');
+  toast('נשמר בטיוטה ✓ — עכשיו לחצו "פרסום ישירות לאתר"');
 }
 
 function exportData(){
-  const content = `/* קובץ מוצרים - BLACK PHONE - עודכן ${new Date().toLocaleDateString('he-IL')} */\n\nconst CATEGORIES = ${JSON.stringify(DATA.categories, null, 2)};\n\nconst PRODUCTS = ${JSON.stringify(DATA.products, null, 2)};\n`;
+  const content = buildFileContent();
   const blob = new Blob([content], {type:'text/javascript'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -362,6 +515,8 @@ document.getElementById('importFile').addEventListener('change', function(e){
 // init
 renderCatTabs();
 renderProdList();
+updateGhStatusUI();
+tryLoadFromGitHub(); // אם מחוברים ל-GitHub, טוען תמיד את הגרסה החדשה ביותר מהאתר החי
 </script>
 </body>
 </html>

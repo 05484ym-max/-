@@ -254,6 +254,11 @@ footer b{ color:var(--accent-gold-soft); }
   <div class="modal glass" id="modalBox"></div>
 </div>
 
+<script>
+// ⚙️ מספר הוואטסאפ של החנות - כתבו כאן עם קידומת מדינה, בלי + ובלי אפסים מובילים
+// לדוגמה: מספר ישראלי 050-123-4567 → יש לכתוב 972501234567
+const WHATSAPP_NUMBER = "972500000000"; // 👈 שנו למספר האמיתי שלכם
+</script>
 <script src="products.js"></script>
 <script>
 // מחזיר HTML לתצוגת תמונה/אייקון של מוצר — אם יש img מוצגת תמונה, אחרת אמוג׳י
@@ -307,11 +312,16 @@ function openModal(p){
     <div class="spec-list">
       ${p.specs.map(s=>`<div class="spec-row"><span>${s[0]}</span><b>${s[1]}</b></div>`).join('')}
     </div>
-    <button class="cta-btn" onclick="alert('פנייה נשלחה! ניצור איתך קשר בהקדם 📞')">רכישה / בקשת פרטים</button>
+    <button class="cta-btn" onclick="sendToWhatsapp('${p.name.replace(/'/g,"\\'")}', ${p.price})">לבירור ויצירת קשר</button>
     <button class="close-btn" onclick="closeModal()">סגירה</button>
   `;
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
+}
+function sendToWhatsapp(name, price){
+  const msg = `שלום! אני מעוניין/ת לקבל פרטים על: ${name} (₪${price.toLocaleString()})`;
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
 }
 function closeModal(){
   document.getElementById('overlay').classList.remove('open');
