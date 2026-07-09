@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ניהול מוצרים | BLACK PHONE</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep-blue:#050b1f; --royal-blue:#0d1f4d; --royal-blue-2:#123072;
+  --accent-gold:#c9a24b; --accent-gold-soft:#e8cd8a;
+  --glass-bg:rgba(255,255,255,0.055); --glass-border:rgba(255,255,255,0.14);
+  --text-main:#f4f6fb; --text-dim:#a8b3cc; --radius:16px;
+  --danger:#e05c5c; --ok:#4caf7d;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  font-family:'Heebo',sans-serif;
+  background:linear-gradient(160deg, var(--deep-blue) 0%, var(--royal-blue) 55%, #081332 100%);
+  background-attachment:fixed; color:var(--text-main); min-height:100vh; padding-bottom:60px;
+}
+.glass{
+  background:var(--glass-bg); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--glass-border); border-radius:var(--radius);
+}
+header{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding:16px 22px; background:rgba(5,11,31,0.6); border-bottom:1px solid var(--glass-border);
+  position:sticky; top:0; z-index:20;
+}
+.logo{font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600;}
+.logo b{color:var(--accent-gold-soft);}
+.logo small{display:block; font-size:.7rem; color:var(--text-dim); font-family:'Heebo',sans-serif; font-weight:400;}
+.hdr-actions{display:flex; gap:10px; flex-wrap:wrap;}
+button{
+  font-family:'Heebo',sans-serif; cursor:pointer; border:none; border-radius:10px;
+  padding:10px 16px; font-size:.85rem; font-weight:700; transition:.2s;
+}
+.btn-gold{ background:linear-gradient(100deg,var(--accent-gold),var(--accent-gold-soft)); color:#1a1204; }
+.btn-gold:hover{filter:brightness(1.08);}
+.btn-ghost{ background:rgba(255,255,255,0.06); color:var(--text-main); border:1px solid var(--glass-border); }
+.btn-ghost:hover{border-color:var(--accent-gold);}
+.btn-danger{ background:rgba(224,92,92,0.15); color:#ff9b9b; border:1px solid rgba(224,92,92,0.4); }
+input[type=file]{display:none;}
+
+main{ max-width:1200px; margin:0 auto; padding:24px 18px; display:grid; grid-template-columns:1fr; gap:20px; }
+@media(min-width:900px){ main{grid-template-columns:340px 1fr;} }
+
+.panel{ padding:20px; }
+.panel h2{ font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--accent-gold-soft); margin-bottom:14px; }
+
+/* category tabs */
+.cat-tabs{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.cat-tab{
+  padding:8px 14px; border-radius:20px; font-size:.8rem; cursor:pointer;
+  border:1px solid var(--glass-border); color:var(--text-dim); background:rgba(255,255,255,0.03);
+  display:flex; align-items:center; gap:6px;
+}
+.cat-tab.active{ border-color:var(--accent-gold); color:var(--accent-gold-soft); background:rgba(201,162,75,0.1); }
+.cat-tab .del-cat{ opacity:.5; font-size:.75rem; }
+.cat-tab .del-cat:hover{ opacity:1; color:var(--danger); }
+.add-cat-row{ display:flex; gap:8px; margin-top:6px; }
+.add-cat-row input{ flex:1; }
+
+/* product list */
+.prod-list{ display:flex; flex-direction:column; gap:8px; max-height:520px; overflow-y:auto; }
+.prod-item{
+  display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px;
+  border:1px solid var(--glass-border); cursor:pointer; transition:.2s;
+}
+.prod-item:hover, .prod-item.active{ border-color:var(--accent-gold); background:rgba(201,162,75,0.07); }
+.prod-item .th{
+  width:38px; height:38px; border-radius:8px; overflow:hidden; flex-shrink:0;
+  background:linear-gradient(150deg,var(--royal-blue-2),var(--deep-blue));
+  display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+}
+.prod-item .th img{ width:100%; height:100%; object-fit:cover; }
+.prod-item .info{ flex:1; min-width:0; }
+.prod-item .info .nm{ font-size:.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.prod-item .info .pr{ font-size:.75rem; color:var(--accent-gold-soft); }
+.prod-item .rm{ color:var(--text-dim); font-size:.9rem; padding:4px 8px; }
+.prod-item .rm:hover{ color:var(--danger); }
+
+/* form */
+label{ display:block; font-size:.8rem; color:var(--text-dim); margin:14px 0 6px; }
+label:first-child{ margin-top:0; }
+input[type=text], input[type=number], input[type=url]{
+  width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--glass-border);
+  background:rgba(255,255,255,0.04); color:var(--text-main); font-family:'Heebo',sans-serif; font-size:.9rem;
+}
+input:focus{ outline:none; border-color:var(--accent-gold); }
+.img-drop{
+  border:2px dashed var(--glass-border); border-radius:14px; padding:16px; text-align:center;
+  cursor:pointer; transition:.2s; display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.img-drop:hover{ border-color:var(--accent-gold); }
+.img-drop img{ max-width:100%; max-height:150px; border-radius:10px; }
+.img-drop .ph{ color:var(--text-dim); font-size:.8rem; }
+.img-url-row{ display:flex; gap:8px; margin-top:8px; }
+.img-url-row input{ flex:1; }
+
+.specs-box{ display:flex; flex-direction:column; gap:8px; }
+.spec-edit-row{ display:flex; gap:8px; align-items:center; }
+.spec-edit-row input{ flex:1; }
+.spec-edit-row .rm-spec{ color:var(--text-dim); cursor:pointer; padding:0 6px; font-size:1.1rem; }
+.spec-edit-row .rm-spec:hover{ color:var(--danger); }
+
+.form-actions{ display:flex; gap:10px; margin-top:22px; }
+.form-actions button{ flex:1; }
+
+.empty-hint{ color:var(--text-dim); font-size:.85rem; text-align:center; padding:40px 10px; }
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--ok); color:#08240f; padding:12px 22px; border-radius:30px;
+  font-size:.85rem; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0; pointer-events:none; transition:.3s; z-index:100;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">BLACK<b>PHONE</b><small>ניהול מוצרים ושירותים</small></div>
+  <div class="hdr-actions">
+    <label class="btn-ghost" for="importFile" style="display:inline-block;">📂 ייבוא products.js</label>
+    <input type="file" id="importFile" accept=".js">
+    <button class="btn-gold" onclick="exportData()">⬇️ הורדת products.js מעודכן</button>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: categories + product list -->
+  <div class="panel glass">
+    <h2>קטגוריות</h2>
+    <div class="cat-tabs" id="catTabs"></div>
+    <div class="add-cat-row">
+      <input type="text" id="newCatName" placeholder="שם קטגוריה חדשה...">
+      <button class="btn-ghost" onclick="addCategory()">+ הוסף</button>
+    </div>
+
+    <h2 style="margin-top:22px;">מוצרים בקטגוריה</h2>
+    <button class="btn-gold" style="width:100%; margin-bottom:12px;" onclick="newProduct()">+ מוצר / שירות חדש</button>
+    <div class="prod-list" id="prodList"></div>
+  </div>
+
+  <!-- RIGHT: edit form -->
+  <div class="panel glass" id="formPanel">
+    <div class="empty-hint">בחרו מוצר לעריכה מהרשימה, או לחצו "מוצר חדש" כדי להתחיל ⬅️</div>
+  </div>
+</main>
+
+<div class="toast" id="toast">נשמר בהצלחה ✓</div>
+
+<script src="products.js"></script>
+<script>
+let DATA = { categories: (typeof CATEGORIES!=='undefined'?CATEGORIES:[]), products: (typeof PRODUCTS!=='undefined'?PRODUCTS:{}) };
+let activeCat = DATA.categories[0]?.id || null;
+let editingIndex = null; // null = new product
+let draftImg = "";
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function slugify(str){
+  return 'cat_' + str.trim().replace(/[^\u0590-\u05FFa-zA-Z0-9]+/g,'_').slice(0,20) + '_' + Math.random().toString(36).slice(2,5);
+}
+
+function renderCatTabs(){
+  const box = document.getElementById('catTabs');
+  box.innerHTML = '';
+  DATA.categories.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'cat-tab' + (c.id===activeCat?' active':'');
+    el.innerHTML = `<span onclick="selectCat('${c.id}')">${c.icon||'📦'} ${c.title}</span> <span class="del-cat" onclick="deleteCategory('${c.id}')">✕</span>`;
+    box.appendChild(el);
+  });
+}
+function selectCat(id){ activeCat=id; editingIndex=null; renderCatTabs(); renderProdList(); showEmptyForm(); }
+
+function addCategory(){
+  const input = document.getElementById('newCatName');
+  const name = input.value.trim();
+  if(!name) return;
+  const id = slugify(name);
+  DATA.categories.push({ id, title:name, sub:"", icon:"📦" });
+  DATA.products[id] = [];
+  input.value='';
+  activeCat = id;
+  renderCatTabs(); renderProdList(); showEmptyForm();
+  toast('קטגוריה נוספה ✓');
+}
+function deleteCategory(id){
+  if(!confirm('למחוק את הקטגוריה וכל המוצרים בתוכה?')) return;
+  DATA.categories = DATA.categories.filter(c=>c.id!==id);
+  delete DATA.products[id];
+  if(activeCat===id) activeCat = DATA.categories[0]?.id || null;
+  renderCatTabs(); renderProdList(); showEmptyForm();
+}
+
+function renderProdList(){
+  const box = document.getElementById('prodList');
+  box.innerHTML = '';
+  const list = DATA.products[activeCat] || [];
+  if(list.length===0){ box.innerHTML = '<div class="empty-hint">אין עדיין מוצרים בקטגוריה זו</div>'; return; }
+  list.forEach((p,i)=>{
+    const el = document.createElement('div');
+    el.className = 'prod-item' + (editingIndex===i?' active':'');
+    el.innerHTML = `<div class="th">${p.img?`<img src="${p.img}">`:(p.icon||'📦')}</div>
+      <div class="info" onclick="editProduct(${i})"><div class="nm">${p.name}</div><div class="pr">₪${(p.price||0).toLocaleString()}</div></div>
+      <div class="rm" onclick="deleteProduct(${i})">🗑️</div>`;
+    box.appendChild(el);
+  });
+}
+
+function showEmptyForm(){
+  document.getElementById('formPanel').innerHTML = '<div class="empty-hint">בחרו מוצר לעריכה מהרשימה, או לחצו "מוצר חדש" כדי להתחיל ⬅️</div>';
+}
+
+function newProduct(){
+  if(!activeCat){ alert('קודם בחרו או צרו קטגוריה'); return; }
+  editingIndex = null; draftImg = "";
+  renderForm({ name:"", price:"", icon:"📦", img:"", specs:[["",""]] });
+}
+function editProduct(i){
+  editingIndex = i; draftImg = (DATA.products[activeCat][i].img)||"";
+  renderProdList();
+  renderForm(DATA.products[activeCat][i]);
+}
+function deleteProduct(i){
+  if(!confirm('למחוק את המוצר?')) return;
+  DATA.products[activeCat].splice(i,1);
+  editingIndex=null; renderProdList(); showEmptyForm();
+  toast('מוצר נמחק');
+}
+
+function renderForm(p){
+  const panel = document.getElementById('formPanel');
+  panel.innerHTML = `
+    <h2>${editingIndex===null?'מוצר חדש':'עריכת מוצר'}</h2>
+
+    <label>שם המוצר / השירות</label>
+    <input type="text" id="f_name" value="${p.name.replace(/"/g,'&quot;')}" placeholder="לדוגמה: iPhone 16 Pro">
+
+    <label>מחיר (₪)</label>
+    <input type="number" id="f_price" value="${p.price}" placeholder="0">
+
+    <label>תמונה</label>
+    <div class="img-drop" id="imgDrop" onclick="document.getElementById('f_imgFile').click()">
+      ${draftImg ? `<img src="${draftImg}">` : `<div class="ph">📷 לחצו כאן או גררו תמונה להעלאה</div>`}
+      <div class="ph">${draftImg? 'לחצו כדי להחליף תמונה':''}</div>
+    </div>
+    <input type="file" id="f_imgFile" accept="image/*" onchange="handleImgFile(this)">
+    <div class="img-url-row">
+      <input type="url" id="f_imgUrl" placeholder="או הדביקו קישור לתמונה מהאינטרנט...">
+      <button class="btn-ghost" onclick="useImgUrl()">שימוש בקישור</button>
+    </div>
+
+    <label>אמוג׳י ברירת מחדל (אם אין תמונה)</label>
+    <input type="text" id="f_icon" value="${p.icon||'📦'}" maxlength="4" style="width:80px;">
+
+    <label>מפרט המוצר</label>
+    <div class="specs-box" id="specsBox"></div>
+    <button class="btn-ghost" style="margin-top:10px; width:100%;" onclick="addSpecRow()">+ הוספת שורת מפרט</button>
+
+    <div class="form-actions">
+      <button class="btn-gold" onclick="saveProduct()">💾 שמירה</button>
+      <button class="btn-ghost" onclick="showEmptyForm()">ביטול</button>
+    </div>
+  `;
+  const specsBox = document.getElementById('specsBox');
+  (p.specs&&p.specs.length?p.specs:[["",""]]).forEach(s=>addSpecRow(s[0], s[1]));
+
+  // drag & drop
+  const drop = document.getElementById('imgDrop');
+  drop.addEventListener('dragover', e=>{e.preventDefault(); drop.style.borderColor='var(--accent-gold)';});
+  drop.addEventListener('dragleave', ()=>{drop.style.borderColor='var(--glass-border)';});
+  drop.addEventListener('drop', e=>{
+    e.preventDefault(); drop.style.borderColor='var(--glass-border)';
+    if(e.dataTransfer.files[0]) readImgFile(e.dataTransfer.files[0]);
+  });
+}
+
+function addSpecRow(key="", val=""){
+  const box = document.getElementById('specsBox');
+  const row = document.createElement('div');
+  row.className = 'spec-edit-row';
+  row.innerHTML = `<input type="text" placeholder="שם שדה (למשל: זיכרון)" class="spec-key" value="${key.replace(/"/g,'&quot;')}">
+    <input type="text" placeholder="ערך (למשל: 256GB)" class="spec-val" value="${val.replace(/"/g,'&quot;')}">
+    <span class="rm-spec" onclick="this.parentElement.remove()">✕</span>`;
+  box.appendChild(row);
+}
+
+function handleImgFile(input){ if(input.files[0]) readImgFile(input.files[0]); }
+function readImgFile(file){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    draftImg = e.target.result; // base64 data URL - embedded directly, no external file needed
+    document.getElementById('imgDrop').innerHTML = `<img src="${draftImg}"><div class="ph">לחצו כדי להחליף תמונה</div>`;
+  };
+  reader.readAsDataURL(file);
+}
+function useImgUrl(){
+  const url = document.getElementById('f_imgUrl').value.trim();
+  if(!url) return;
+  draftImg = url;
+  document.getElementById('imgDrop').innerHTML = `<img src="${draftImg}"><div class="ph">לחצו כדי להחליף תמונה</div>`;
+}
+
+function saveProduct(){
+  const name = document.getElementById('f_name').value.trim();
+  const price = parseFloat(document.getElementById('f_price').value)||0;
+  const icon = document.getElementById('f_icon').value.trim()||'📦';
+  if(!name){ alert('נא להזין שם מוצר'); return; }
+  const specs = [...document.querySelectorAll('.spec-edit-row')].map(r=>{
+    return [r.querySelector('.spec-key').value.trim(), r.querySelector('.spec-val').value.trim()];
+  }).filter(s=>s[0]||s[1]);
+
+  const product = { name, price, icon, img:draftImg, specs };
+  if(!DATA.products[activeCat]) DATA.products[activeCat]=[];
+  if(editingIndex===null){ DATA.products[activeCat].push(product); }
+  else { DATA.products[activeCat][editingIndex] = product; }
+
+  renderProdList(); showEmptyForm();
+  toast('נשמר בהצלחה ✓ — לא לשכוח ללחוץ "הורדת products.js" בסיום');
+}
+
+function exportData(){
+  const content = `/* קובץ מוצרים - BLACK PHONE - עודכן ${new Date().toLocaleDateString('he-IL')} */\n\nconst CATEGORIES = ${JSON.stringify(DATA.categories, null, 2)};\n\nconst PRODUCTS = ${JSON.stringify(DATA.products, null, 2)};\n`;
+  const blob = new Blob([content], {type:'text/javascript'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'products.js';
+  a.click();
+  toast('הקובץ ירד — החליפו בו את products.js הישן בתיקייה');
+}
+
+document.getElementById('importFile').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      const code = ev.target.result;
+      const fn = new Function(code + '; return {CATEGORIES, PRODUCTS};');
+      const result = fn();
+      DATA = { categories: result.CATEGORIES, products: result.PRODUCTS };
+      activeCat = DATA.categories[0]?.id || null;
+      editingIndex = null;
+      renderCatTabs(); renderProdList(); showEmptyForm();
+      toast('הקובץ יובא בהצלחה ✓');
+    }catch(err){
+      alert('שגיאה בקריאת הקובץ: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// init
+renderCatTabs();
+renderProdList();
+</script>
+</body>
+</html>
