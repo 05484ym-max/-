@@ -15,7 +15,7 @@
    ============================================================ */
 
 const CATEGORIES = [
-  { id:"lab",        title:"מעבדה",   sub:"תיקונים ושירות", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Auto_Repair_shop.jpg" },
+  { id:"lab",        title:"מעבדה",   sub:"תיקונים ושירות", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Centre_de_r%C3%A9paration_de_t%C3%A9l%C3%A9phones_portables_%C3%A0_Cotonou_B%C3%A9nin.jpg" },
   { id:"products",   title:"מוצרים",  sub:"מכשירים חדשים", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Black_smartphone_in_hand_%28Unsplash%29.jpg" },
   { id:"accessories",title:"אבזרים",  sub:"כיסויים, מטענים", img:"https://commons.wikimedia.org/wiki/Special:FilePath/JLab_true_wireless.jpg" },
   { id:"kosher",     title:"כשרויות", sub:"מכשירים כשרים", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Wikipidea_on_a_keypad_phone.jpg" },
