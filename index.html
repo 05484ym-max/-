@@ -87,10 +87,6 @@ body::before{
 .logo-icon{ width:2.9rem; height:2.9rem; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.1; flex-shrink:0; }
 .logo .lg-black{ font-size:3.9rem; font-weight:800; line-height:1; }
 .logo .lg-phone{ font-size:3.9rem; font-weight:400; line-height:1; }
-.phone-line{
-  margin-top:18px; font-size:1.05rem; letter-spacing:1px; color:var(--text-main);
-  direction:ltr; unicode-bidi:isolate;
-}
 .cta-row{ display:flex; gap:12px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
 .wa-btn, .call-btn{
   padding:12px 26px; border-radius:30px; cursor:pointer;
@@ -273,6 +269,18 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.8rem; position:relative; z-index:1; }
 
 /* ===== Hamburger button ===== */
+.top-logo-bar{
+  display:none;
+  position:sticky; top:0; z-index:55;
+  align-items:baseline; justify-content:center; gap:1px;
+  padding:14px 10px; cursor:pointer;
+  direction:ltr;
+  background:linear-gradient(180deg, rgba(2,13,23,0.75), rgba(2,13,23,0.35) 80%, transparent);
+  backdrop-filter:blur(10px);
+}
+.top-logo-bar .lg-black{ font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:800; color:var(--accent-gold-soft); }
+.top-logo-bar .lg-phone{ font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:400; color:var(--accent-gold-soft); }
+
 .hamburger-btn{
   position:fixed; top:18px; right:18px; z-index:60;
   width:52px; height:52px; border-radius:50%;
@@ -328,6 +336,10 @@ footer b{ color:var(--accent-gold-soft); }
 <body>
 <div class="vignette"></div>
 
+<div class="top-logo-bar" onclick="goHome()">
+  <span class="lg-black">Black</span><span class="lg-phone">phone</span>
+</div>
+
 <button class="hamburger-btn" onclick="openMenu()" aria-label="תפריט">
   <span></span><span></span><span></span>
 </button>
@@ -380,7 +392,6 @@ footer b{ color:var(--accent-gold-soft); }
         <span class="lg-black">Black</span><span class="lg-phone">phone</span>
       </div>
       <p>המקום שלכם למכשירים, תיקונים ואבזרים ברמה הכי גבוהה</p>
-      <div class="phone-line">☎ 053-987-2593</div>
       <div class="cta-row">
         <button class="wa-btn" onclick="sendGeneralWhatsapp()">יצירת קשר בוואטסאפ</button>
         <a class="call-btn" href="tel:0539872593"><svg><use href="#icon-phone"></use></svg>ליצירת קשר טלפוני</a>
@@ -476,6 +487,7 @@ function hideAllViews(){
   document.getElementById('subcat-view').style.display = 'none';
   document.getElementById('products-view').style.display = 'none';
   document.querySelector('.hamburger-btn').style.display = 'none';
+  document.querySelector('.top-logo-bar').style.display = 'flex';
 }
 
 // פותח צומת כלשהו בעץ - אם יש לו children מציג עוד ריבועים, אחרת מציג מוצרים
@@ -539,6 +551,7 @@ function goHome(){
   hideAllViews();
   document.getElementById('home-view').style.display = 'block';
   document.querySelector('.hamburger-btn').style.display = 'flex';
+  document.querySelector('.top-logo-bar').style.display = 'none';
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
