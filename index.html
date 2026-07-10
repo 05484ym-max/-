@@ -150,7 +150,7 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
   position:relative; opacity:.95; margin-bottom:8px;
   filter:drop-shadow(0 0 10px rgba(138,90,52,0.35));
 }
-.cat-card .icon svg{ width:26px; height:26px; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.2; }
+.cat-card .icon svg{ width:30px; height:30px; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.2; }
 .cat-photo{
   position:absolute; inset:0; background-size:cover; background-position:center;
   opacity:.22; filter:saturate(.5) brightness(.8);
@@ -392,9 +392,15 @@ footer b{ color:var(--accent-gold-soft); }
 <!-- אייקוני קו יוקרתיים - עיצוב מקורי, ללא אימוג'ים -->
 <svg style="display:none" aria-hidden="true">
   <symbol id="icon-tool" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="3" width="5.5" height="5.5" rx="1"></rect>
-    <line x1="8.2" y1="8.2" x2="20" y2="20"></line>
-    <line x1="16.5" y1="16.5" x2="20" y2="20"></line>
+    <rect x="2" y="2" width="7" height="4.6" rx="1.3" transform="rotate(45 5.5 4.3)"></rect>
+    <line x1="8.3" y1="8.3" x2="17" y2="17"></line>
+    <line x1="15.5" y1="19.5" x2="19.5" y2="15.5"></line>
+  </symbol>
+  <symbol id="icon-speaker" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="2" width="12" height="20" rx="2.5"></rect>
+    <circle cx="12" cy="7.5" r="1.7"></circle>
+    <circle cx="12" cy="15.5" r="4"></circle>
+    <circle cx="12" cy="15.5" r="1.3"></circle>
   </symbol>
   <symbol id="icon-phone" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
     <rect x="7" y="2" width="10" height="20" rx="2.2"></rect>
@@ -443,7 +449,12 @@ footer b{ color:var(--accent-gold-soft); }
     <circle cx="10.1" cy="12.4" r=".55" fill="#040912"></circle>
   </symbol>
   <symbol id="icon-chat-filled" viewBox="0 0 24 24">
-    <path d="M6 4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h1v3l4-3h7a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+    <rect x="2" y="2" width="20" height="20" rx="6.5"></rect>
+    <g transform="translate(12,12) rotate(-45) scale(0.36)" fill="#040912">
+      <circle cx="-9" cy="0" r="3.4"></circle>
+      <circle cx="9" cy="0" r="3.4"></circle>
+      <rect x="-9" y="-1.8" width="18" height="3.6" rx="1.8"></rect>
+    </g>
   </symbol>
 </svg>
 
@@ -499,7 +510,7 @@ const WHATSAPP_NUMBER = "972539872593";
 <script src="products.js"></script>
 <script>
 // מזהה SVG לכל קטגוריה - אפשר להוסיף התאמות לקטגוריות חדשות כאן
-const CATEGORY_ICONS = { lab:'icon-tool', products:'icon-phone', accessories:'icon-headphones', kosher:'icon-seal', cellular:'icon-phone', cellular_kosher:'icon-seal', smartphones:'icon-phone' };
+const CATEGORY_ICONS = { lab:'icon-tool', products:'icon-speaker', accessories:'icon-headphones', kosher:'icon-seal', cellular:'icon-phone', cellular_kosher:'icon-seal', smartphones:'icon-phone' };
 function categoryIcon(id){ return CATEGORY_ICONS[id] || 'icon-gem'; }
 
 // מחזיר HTML לתצוגת תמונה של מוצר — אם יש img מוצגת תמונה, אחרת אייקון תמונה אלגנטי
@@ -556,7 +567,7 @@ function buildCard(c, onClick){
   const visual = c.img
     ? `<div class="cat-photo" style="background-image:url('${c.img.replace(/'/g,"\\'")}')"></div><div class="cat-overlay"></div>`
     : `<div class="shine"></div><div class="icon"><svg><use href="#${categoryIcon(c.id)}"></use></svg></div>`;
-  el.innerHTML = `${visual}<h3>${c.title}</h3><span>${c.sub||''}</span><span class="tap-hint">לחץ כאן ⟵</span>`;
+  el.innerHTML = `${visual}<h3>${c.title}</h3>`;
   return el;
 }
 
