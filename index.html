@@ -339,9 +339,11 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
 .menu-logo .lg-phone-mini{ font-weight:400; }
 .menu-items{ display:flex; flex-direction:column; gap:4px; }
 .menu-item{
-  display:block; padding:16px 6px; color:var(--text-main); text-decoration:none;
+  display:block; width:100%; padding:16px 6px; color:var(--text-main); text-decoration:none;
   font-size:1.02rem; font-weight:500; border-bottom:1px solid rgba(255,255,255,0.08);
   transition:color .2s, padding-right .2s;
+  background:none; border-top:none; border-left:none; border-right:none;
+  text-align:right; font-family:'Heebo',sans-serif; cursor:pointer;
 }
 .menu-item:hover{ color:var(--accent-gold-soft); padding-right:10px; }
 footer b{ color:var(--accent-gold-soft); }
