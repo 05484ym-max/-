@@ -84,9 +84,9 @@ body::before{
   color:var(--accent-gold-soft);
   text-shadow:0 1px 1px rgba(0,0,0,0.35), 0 0 24px rgba(138,106,40,0.45);
 }
-.logo-icon{ width:2.6rem; height:2.6rem; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.1; flex-shrink:0; }
-.logo .lg-black{ font-size:3.4rem; font-weight:800; line-height:1; }
-.logo .lg-phone{ font-size:3.4rem; font-weight:400; line-height:1; }
+.logo-icon{ width:2.9rem; height:2.9rem; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.1; flex-shrink:0; }
+.logo .lg-black{ font-size:3.9rem; font-weight:800; line-height:1; }
+.logo .lg-phone{ font-size:3.9rem; font-weight:400; line-height:1; }
 .phone-line{
   margin-top:18px; font-size:1.05rem; letter-spacing:1px; color:var(--text-main);
   direction:ltr; unicode-bidi:isolate;
@@ -274,15 +274,15 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
 
 /* ===== Hamburger button ===== */
 .hamburger-btn{
-  position:fixed; top:18px; left:18px; z-index:60;
-  width:44px; height:44px; border-radius:50%;
+  position:fixed; top:18px; right:18px; z-index:60;
+  width:52px; height:52px; border-radius:50%;
   background:rgba(2,13,23,0.55); backdrop-filter:blur(12px);
   border:1px solid rgba(138,106,40,0.35);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
   cursor:pointer; transition:border-color .25s, background .25s;
 }
 .hamburger-btn:hover{ border-color:var(--accent-gold-soft); background:rgba(2,13,23,0.75); }
-.hamburger-btn span{ width:18px; height:1.5px; background:var(--accent-gold-soft); border-radius:2px; }
+.hamburger-btn span{ width:22px; height:1.8px; background:var(--accent-gold-soft); border-radius:2px; }
 
 /* ===== Menu drawer ===== */
 .menu-overlay{
@@ -292,14 +292,14 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
 }
 .menu-overlay.open{ opacity:1; pointer-events:auto; }
 .menu-drawer{
-  position:absolute; top:0; left:0; height:100%;
+  position:absolute; top:0; right:0; height:100%;
   width:78%; max-width:340px;
   background:linear-gradient(165deg, rgba(12,52,80,0.68), rgba(2,13,23,0.92));
   backdrop-filter:blur(22px) saturate(140%);
-  border-right:1px solid rgba(138,106,40,0.3);
-  box-shadow:20px 0 50px rgba(0,0,0,0.4);
+  border-left:1px solid rgba(138,106,40,0.3);
+  box-shadow:-20px 0 50px rgba(0,0,0,0.4);
   padding:26px 22px;
-  transform:translateX(-105%);
+  transform:translateX(105%);
   transition:transform .4s cubic-bezier(.2,.8,.2,1);
   display:flex; flex-direction:column;
 }
