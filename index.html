@@ -29,6 +29,7 @@
 html{scroll-behavior:smooth;}
 body{
   font-family:'Heebo',sans-serif;
+  display:flex; flex-direction:column;
   background:
     radial-gradient(ellipse 100% 70% at 20% -10%, rgba(50,160,210,0.32), transparent 62%),
     radial-gradient(ellipse 90% 60% at 100% 0%, rgba(138,106,40,0.16), transparent 58%),
@@ -114,7 +115,7 @@ body::before{
 }
 .back-btn:hover{ border-color:var(--accent-gold); background:rgba(138,106,40,0.1); }
 
-main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px 18px 80px;}
+main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; padding:26px 18px 80px; flex:1 0 auto;}
 
 /* ===== Hero ===== */
 .hero{ text-align:center; padding:58px 10px 46px; }
@@ -266,7 +267,7 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 .cta-btn:hover{ filter:brightness(1.08); }
 .close-btn{ background:rgba(255,255,255,0.06); color:var(--text-dim); border:1px solid var(--glass-border); }
 
-footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.8rem; position:relative; z-index:1; }
+footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.8rem; position:relative; z-index:1; flex-shrink:0; }
 
 /* ===== Hamburger button ===== */
 .top-logo-bar{
@@ -413,7 +414,7 @@ footer b{ color:var(--accent-gold-soft); }
   </section>
 </main>
 
-<footer>© <span id="year"></span> <b>BLACK PHONE</b> · כל הזכויות שמורות</footer>
+<footer>© <span id="year"></span> כל הזכויות שמורות ל-<b>Yosef Omesi</b></footer>
 
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal glass" id="modalBox"></div>
