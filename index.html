@@ -14,13 +14,13 @@
   --deep-blue:#020d17;      /* רקע ראשי כהה - כמעט שחור-תכלת */
   --royal-blue:#0c3450;     /* תכלת עמוק יוקרתי */
   --royal-blue-2:#175a80;   /* תכלת-כחול משני, בהיר יותר */
-  --accent-gold:#9c7a2e;    /* זהב עמוק ומתכתי - לא צהוב */
-  --accent-gold-soft:#d9b45c;
-  --accent-gold-shine:#fbeecb; /* ברק זהב חם לגימור מתכתי */
+  --accent-gold:#8a6a28;    /* זהב עמוק וברונזה - לא צהוב */
+  --accent-gold-soft:#c3a15c;
+  --accent-gold-shine:#f2e2b8; /* ברק זהב חם לגימור מתכתי */
   --accent-ice:#8fd3e8;     /* נגיעת תכלת-קרח לברק עדין */
   --glass-bg:rgba(255,255,255,0.055);
   --glass-border:rgba(255,255,255,0.14);
-  --glass-border-hi:rgba(156,122,46,0.55);
+  --glass-border-hi:rgba(138,106,40,0.55);
   --text-main:#f4f6fb;
   --text-dim:#a8b3cc;
   --radius:22px;
@@ -31,8 +31,8 @@ body{
   font-family:'Heebo',sans-serif;
   background:
     radial-gradient(ellipse 100% 70% at 20% -10%, rgba(50,160,210,0.32), transparent 62%),
-    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(156,122,46,0.16), transparent 58%),
-    radial-gradient(ellipse 80% 55% at 50% 115%, rgba(156,122,46,0.10), transparent 60%),
+    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(138,106,40,0.16), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 50% 115%, rgba(138,106,40,0.10), transparent 60%),
     linear-gradient(160deg, var(--deep-blue) 0%, var(--royal-blue) 55%, #061d2e 100%);
   background-attachment:fixed;
   color:var(--text-main);
@@ -82,7 +82,7 @@ body::before{
   font-family:'Cormorant Garamond', serif;
   cursor:pointer;
   color:var(--accent-gold-soft);
-  text-shadow:0 1px 1px rgba(0,0,0,0.35), 0 0 24px rgba(156,122,46,0.45);
+  text-shadow:0 1px 1px rgba(0,0,0,0.35), 0 0 24px rgba(138,106,40,0.45);
 }
 .logo-icon{ width:2.6rem; height:2.6rem; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.1; flex-shrink:0; }
 .logo .lg-black{ font-size:3.4rem; font-weight:800; line-height:1; }
@@ -101,11 +101,11 @@ body::before{
 .back-btn{
   display:inline-flex; align-items:center; gap:6px;
   color:var(--accent-gold-soft); background:rgba(255,255,255,0.04);
-  border:1px solid rgba(156,122,46,0.3);
+  border:1px solid rgba(138,106,40,0.3);
   padding:8px 18px; border-radius:30px; cursor:pointer; font-size:.85rem;
   font-family:'Heebo',sans-serif; transition:.25s; margin-bottom:18px;
 }
-.back-btn:hover{ border-color:var(--accent-gold); background:rgba(156,122,46,0.1); }
+.back-btn:hover{ border-color:var(--accent-gold); background:rgba(138,106,40,0.1); }
 
 main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px 18px 80px;}
 
@@ -130,11 +130,11 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 .cat-card:hover, .cat-card:active{
   transform:translateY(-6px) scale(1.015);
   border-color:var(--glass-border-hi);
-  box-shadow:0 20px 45px rgba(0,0,0,0.45), 0 0 0 1px rgba(156,122,46,0.25);
+  box-shadow:0 20px 45px rgba(0,0,0,0.45), 0 0 0 1px rgba(138,106,40,0.25);
 }
 .cat-card .icon{
   position:relative; opacity:.95; margin-bottom:8px;
-  filter:drop-shadow(0 0 10px rgba(156,122,46,0.35));
+  filter:drop-shadow(0 0 10px rgba(138,106,40,0.35));
 }
 .cat-card .icon svg{ width:26px; height:26px; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.2; }
 .cat-photo{
@@ -157,7 +157,7 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 .cat-card h3{
   font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; margin-bottom:3px;
   color:var(--accent-gold-soft);
-  text-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 14px rgba(156,122,46,0.3);
+  text-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 14px rgba(138,106,40,0.3);
 }
 .cat-card span{ font-size:.72rem; color:var(--text-dim); }
 .cat-card .tap-hint{
