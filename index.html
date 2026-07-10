@@ -92,7 +92,7 @@ body::before{
 }
 .logo .lg-black{ font-size:3.9rem; font-weight:800; line-height:1; }
 .logo .lg-phone{ font-size:3.9rem; font-weight:400; line-height:1; }
-.cta-row{ display:flex; gap:10px; justify-content:center; margin-top:46px; flex-wrap:wrap; }
+.cta-row{ display:flex; gap:10px; justify-content:center; margin-top:60px; flex-wrap:wrap; }
 .wa-btn, .call-btn{
   flex:1 1 0; max-width:172px; justify-content:center;
   padding:11px 14px; border-radius:30px; cursor:pointer;
@@ -146,7 +146,7 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 
 /* ===== Category Grid (home) ===== */
 .grid{
-  display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:26px;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:44px;
 }
 @media(min-width:640px){ .grid{grid-template-columns:repeat(4,1fr); gap:22px;} }
 
@@ -338,6 +338,12 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
 }
 .hamburger-btn:hover{ border-color:var(--accent-gold-soft); background:rgba(2,13,23,0.75); }
 .hamburger-btn span{ width:22px; height:1.8px; background:var(--accent-gold-soft); border-radius:2px; }
+.menu-hint{
+  position:absolute; top:50%; right:100%; transform:translateY(-50%);
+  margin-right:10px; white-space:nowrap;
+  font-size:.66rem; font-weight:500; color:var(--accent-gold-soft); opacity:.8;
+  background:none; height:auto; width:auto; border-radius:0;
+}
 
 /* ===== Menu drawer ===== */
 .menu-overlay{
@@ -399,6 +405,7 @@ footer b{ color:var(--accent-gold-soft); }
 
 <button class="hamburger-btn" onclick="openMenu()" aria-label="תפריט">
   <span></span><span></span><span></span>
+  <span class="menu-hint">לחץ לתפריט →</span>
 </button>
 
 <div class="menu-overlay" id="menuOverlay" onclick="if(event.target===this)closeMenu()">
