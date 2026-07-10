@@ -233,6 +233,17 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
     <h2 style="margin-top:22px;">מוצרים בקטגוריה</h2>
     <button class="btn-gold" style="width:100%; margin-bottom:12px;" onclick="newProduct()">+ מוצר / שירות חדש</button>
     <div class="prod-list" id="prodList"></div>
+
+    <h2 style="margin-top:22px;">תפריט צדדי (המבורגר)</h2>
+    <p class="struct-hint">השורות שמופיעות כשלקוח פותח את תפריט ההמבורגר באתר. כל שורה = טקסט + קישור (וואטסאפ, ווייז, טלפון, אתר אחר...).</p>
+    <div id="menuListBox"></div>
+    <div class="struct-add-row" style="margin-top:8px;">
+      <input type="text" id="newMenuLabel" placeholder="טקסט, למשל: שעות פתיחה" style="flex:1;">
+    </div>
+    <div class="struct-add-row" style="margin-top:6px;">
+      <input type="text" id="newMenuUrl" placeholder="קישור מלא, למשל https://wa.me/972...">
+      <button class="btn-gold" onclick="addMenuItem()">+ הוספה</button>
+    </div>
   </div>
 
   <!-- RIGHT: edit form -->
@@ -245,7 +256,7 @@ input:focus{ outline:none; border-color:var(--accent-gold); }
 
 <script src="products.js"></script>
 <script>
-let DATA = { categories: (typeof CATEGORIES!=='undefined'?CATEGORIES:[]), products: (typeof PRODUCTS!=='undefined'?PRODUCTS:{}) };
+let DATA = { categories: (typeof CATEGORIES!=='undefined'?CATEGORIES:[]), products: (typeof PRODUCTS!=='undefined'?PRODUCTS:{}), menu: (typeof MENU_ITEMS!=='undefined'?MENU_ITEMS:[]) };
 let activeCat = leafCategories()[0]?.id || null;
 let editingIndex = null; // null = new product
 let draftImg = "";
@@ -337,7 +348,7 @@ function b64DecodeUnicode(str){
   return decodeURIComponent(escape(atob(str)));
 }
 function buildFileContent(){
-  return `/* קובץ מוצרים - BLACK PHONE - עודכן ${new Date().toLocaleString('he-IL')} */\n\nconst CATEGORIES = ${JSON.stringify(DATA.categories, null, 2)};\n\nconst PRODUCTS = ${JSON.stringify(DATA.products, null, 2)};\n`;
+  return `/* קובץ מוצרים - BLACK PHONE - עודכן ${new Date().toLocaleString('he-IL')} */\n\nconst MENU_ITEMS = ${JSON.stringify(DATA.menu||[], null, 2)};\n\nconst CATEGORIES = ${JSON.stringify(DATA.categories, null, 2)};\n\nconst PRODUCTS = ${JSON.stringify(DATA.products, null, 2)};\n`;
 }
 
 // טוען את products.js העדכני ביותר ישירות מהריפו (כדי לא לדרוס שינויים של מישהו אחר)
@@ -351,12 +362,12 @@ async function tryLoadFromGitHub(){
     if(!res.ok) return;
     const json = await res.json();
     const code = b64DecodeUnicode(json.content.replace(/\n/g,''));
-    const fn = new Function(code + '; return {CATEGORIES, PRODUCTS};');
+    const fn = new Function(code + '; return {CATEGORIES, PRODUCTS, MENU_ITEMS: (typeof MENU_ITEMS!=="undefined"?MENU_ITEMS:[])};');
     const result = fn();
-    DATA = { categories: result.CATEGORIES, products: result.PRODUCTS };
+    DATA = { categories: result.CATEGORIES, products: result.PRODUCTS, menu: result.MENU_ITEMS||[] };
     activeCat = leafCategories()[0]?.id || null;
     editingIndex = null;
-    renderCatTabs(); renderProdList(); showEmptyForm();
+    renderCatTabs(); renderProdList(); showEmptyForm(); renderMenuList();
   }catch(e){ /* silent - fall back to embedded data */ }
 }
 
@@ -589,6 +600,51 @@ function saveCategoryEdit(){
   toast('הקטגוריה עודכנה ✓ — לחצו "פרסום ישירות לאתר"');
 }
 
+/* ================= Side menu items ================= */
+function renderMenuList(){
+  const box = document.getElementById('menuListBox');
+  if(!box) return;
+  box.innerHTML = '';
+  (DATA.menu||[]).forEach((m,i)=>{
+    const row = document.createElement('div');
+    row.className = 'struct-parent';
+    row.innerHTML = `
+      <div class="p-title">${m.label} <span class="edit-cat" onclick="editMenuItem(${i})" title="עריכה">✎</span> <span class="del-cat" onclick="deleteMenuItem(${i})" title="מחיקה">✕</span></div>
+      <div class="struct-none" style="word-break:break-all;">${m.url}</div>
+    `;
+    box.appendChild(row);
+  });
+  if(!(DATA.menu||[]).length){ box.innerHTML = '<div class="struct-none">אין עדיין שורות בתפריט</div>'; }
+}
+function addMenuItem(){
+  const labelInput = document.getElementById('newMenuLabel');
+  const urlInput = document.getElementById('newMenuUrl');
+  const label = labelInput.value.trim();
+  const url = urlInput.value.trim();
+  if(!label || !url){ alert('נא למלא גם טקסט וגם קישור'); return; }
+  if(!DATA.menu) DATA.menu = [];
+  DATA.menu.push({ label, url });
+  labelInput.value=''; urlInput.value='';
+  renderMenuList();
+  toast('נוסף לתפריט ✓ — לחצו "פרסום ישירות לאתר"');
+}
+function editMenuItem(i){
+  const item = DATA.menu[i];
+  const newLabel = prompt('טקסט:', item.label);
+  if(newLabel===null) return;
+  const newUrl = prompt('קישור:', item.url);
+  if(newUrl===null) return;
+  item.label = newLabel.trim() || item.label;
+  item.url = newUrl.trim() || item.url;
+  renderMenuList();
+  toast('עודכן ✓');
+}
+function deleteMenuItem(i){
+  if(!confirm('למחוק את השורה מהתפריט?')) return;
+  DATA.menu.splice(i,1);
+  renderMenuList();
+}
+
 function renderProdList(){
   const box = document.getElementById('prodList');
   box.innerHTML = '';
@@ -730,12 +786,12 @@ document.getElementById('importFile').addEventListener('change', function(e){
   reader.onload = ev=>{
     try{
       const code = ev.target.result;
-      const fn = new Function(code + '; return {CATEGORIES, PRODUCTS};');
+      const fn = new Function(code + '; return {CATEGORIES, PRODUCTS, MENU_ITEMS: (typeof MENU_ITEMS!=="undefined"?MENU_ITEMS:[])};');
       const result = fn();
-      DATA = { categories: result.CATEGORIES, products: result.PRODUCTS };
+      DATA = { categories: result.CATEGORIES, products: result.PRODUCTS, menu: result.MENU_ITEMS||[] };
       activeCat = leafCategories()[0]?.id || null;
       editingIndex = null;
-      renderCatTabs(); renderProdList(); showEmptyForm();
+      renderCatTabs(); renderProdList(); showEmptyForm(); renderMenuList();
       toast('הקובץ יובא בהצלחה ✓');
     }catch(err){
       alert('שגיאה בקריאת הקובץ: '+err.message);
@@ -747,6 +803,7 @@ document.getElementById('importFile').addEventListener('change', function(e){
 // init
 renderCatTabs();
 renderProdList();
+renderMenuList();
 updateGhStatusUI();
 tryLoadFromGitHub(); // אם מחוברים ל-GitHub, טוען תמיד את הגרסה החדשה ביותר מהאתר החי
 </script>

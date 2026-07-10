@@ -271,11 +271,74 @@ main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:26px
 .close-btn{ background:rgba(255,255,255,0.06); color:var(--text-dim); border:1px solid var(--glass-border); }
 
 footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.8rem; position:relative; z-index:1; }
+
+/* ===== Hamburger button ===== */
+.hamburger-btn{
+  position:fixed; top:18px; left:18px; z-index:60;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(2,13,23,0.55); backdrop-filter:blur(12px);
+  border:1px solid rgba(138,106,40,0.35);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  cursor:pointer; transition:border-color .25s, background .25s;
+}
+.hamburger-btn:hover{ border-color:var(--accent-gold-soft); background:rgba(2,13,23,0.75); }
+.hamburger-btn span{ width:18px; height:1.5px; background:var(--accent-gold-soft); border-radius:2px; }
+
+/* ===== Menu drawer ===== */
+.menu-overlay{
+  position:fixed; inset:0; z-index:90;
+  background:rgba(2,6,18,0.55); backdrop-filter:blur(3px);
+  opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.menu-overlay.open{ opacity:1; pointer-events:auto; }
+.menu-drawer{
+  position:absolute; top:0; left:0; height:100%;
+  width:78%; max-width:340px;
+  background:linear-gradient(165deg, rgba(12,52,80,0.68), rgba(2,13,23,0.92));
+  backdrop-filter:blur(22px) saturate(140%);
+  border-right:1px solid rgba(138,106,40,0.3);
+  box-shadow:20px 0 50px rgba(0,0,0,0.4);
+  padding:26px 22px;
+  transform:translateX(-105%);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1);
+  display:flex; flex-direction:column;
+}
+.menu-overlay.open .menu-drawer{ transform:translateX(0); }
+.menu-close{
+  align-self:flex-start; background:none; border:1px solid var(--glass-border);
+  color:var(--text-dim); width:34px; height:34px; border-radius:50%; cursor:pointer;
+  font-size:.9rem; margin-bottom:22px; transition:.25s;
+}
+.menu-close:hover{ border-color:var(--accent-gold); color:var(--accent-gold-soft); }
+.menu-logo{
+  font-family:'Cormorant Garamond',serif; direction:ltr; text-align:center;
+  color:var(--accent-gold-soft); font-size:1.6rem; font-weight:800; margin-bottom:30px;
+}
+.menu-logo .lg-phone-mini{ font-weight:400; }
+.menu-items{ display:flex; flex-direction:column; gap:4px; }
+.menu-item{
+  display:block; padding:16px 6px; color:var(--text-main); text-decoration:none;
+  font-size:1.02rem; font-weight:500; border-bottom:1px solid rgba(255,255,255,0.08);
+  transition:color .2s, padding-right .2s;
+}
+.menu-item:hover{ color:var(--accent-gold-soft); padding-right:10px; }
 footer b{ color:var(--accent-gold-soft); }
 </style>
 </head>
 <body>
 <div class="vignette"></div>
+
+<button class="hamburger-btn" onclick="openMenu()" aria-label="תפריט">
+  <span></span><span></span><span></span>
+</button>
+
+<div class="menu-overlay" id="menuOverlay" onclick="if(event.target===this)closeMenu()">
+  <nav class="menu-drawer" id="menuDrawer">
+    <button class="menu-close" onclick="closeMenu()" aria-label="סגירה">✕</button>
+    <div class="menu-logo">Black<span class="lg-phone-mini">phone</span></div>
+    <div class="menu-items" id="menuItems"></div>
+  </nav>
+</div>
 
 <!-- אייקוני קו יוקרתיים - עיצוב מקורי, ללא אימוג'ים -->
 <svg style="display:none" aria-hidden="true">
@@ -364,6 +427,27 @@ function thumbContent(p){
 }
 
 document.getElementById('year').textContent = new Date().getFullYear();
+
+// ---------- Side menu (hamburger) ----------
+const menuItemsBox = document.getElementById('menuItems');
+(typeof MENU_ITEMS!=='undefined' ? MENU_ITEMS : []).forEach(item=>{
+  const a = document.createElement('a');
+  a.className = 'menu-item';
+  a.href = item.url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.textContent = item.label;
+  menuItemsBox.appendChild(a);
+});
+function openMenu(){
+  document.getElementById('menuOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMenu(){
+  document.getElementById('menuOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMenu(); });
 
 // בונה כרטיס ריבוע (משמש גם לקטגוריות ראשיות וגם לתת-קטגוריות)
 function buildCard(c, onClick){
