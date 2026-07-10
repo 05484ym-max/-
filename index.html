@@ -91,13 +91,24 @@ body::before{
   margin-top:18px; font-size:1.05rem; letter-spacing:1px; color:var(--text-main);
   direction:ltr; unicode-bidi:isolate;
 }
-.wa-btn{
-  margin-top:16px; padding:12px 30px; border:none; border-radius:30px; cursor:pointer;
+.cta-row{ display:flex; gap:12px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+.wa-btn, .call-btn{
+  padding:12px 26px; border-radius:30px; cursor:pointer;
   font-family:'Heebo',sans-serif; font-weight:700; font-size:.92rem;
+  transition:filter .2s, background .2s, color .2s;
+}
+.wa-btn{
+  border:none;
   background:linear-gradient(100deg, var(--accent-gold), var(--accent-gold-soft));
-  color:#1a1204; transition:filter .2s;
+  color:#1a1204;
 }
 .wa-btn:hover{ filter:brightness(1.08); }
+.call-btn{
+  background:transparent; border:1.5px solid var(--accent-gold-soft); color:var(--accent-gold-soft);
+  text-decoration:none; display:inline-flex; align-items:center; gap:7px;
+}
+.call-btn:hover{ background:rgba(201,162,75,0.1); }
+.call-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.6; }
 .back-btn{
   display:inline-flex; align-items:center; gap:6px;
   color:var(--accent-gold-soft); background:rgba(255,255,255,0.04);
@@ -307,7 +318,10 @@ footer b{ color:var(--accent-gold-soft); }
       </div>
       <p>המקום שלכם למכשירים, תיקונים ואבזרים ברמה הכי גבוהה</p>
       <div class="phone-line">☎ 053-987-2593</div>
-      <button class="wa-btn" onclick="sendGeneralWhatsapp()">יצירת קשר בוואטסאפ</button>
+      <div class="cta-row">
+        <button class="wa-btn" onclick="sendGeneralWhatsapp()">יצירת קשר בוואטסאפ</button>
+        <a class="call-btn" href="tel:0539872593"><svg><use href="#icon-phone"></use></svg>ליצירת קשר טלפוני</a>
+      </div>
     </div>
     <div class="grid" id="catGrid"></div>
   </section>
