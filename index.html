@@ -225,6 +225,12 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 .modal .thumb-lg svg{ width:22%; height:22%; }
 .product-card h4{ font-size:.95rem; font-weight:500; }
 .product-card .price{ color:var(--accent-gold-soft); font-weight:700; font-size:.95rem; }
+.tap-hint-prod{
+  display:block; margin-top:6px; font-size:.64rem; letter-spacing:.4px;
+  color:var(--accent-gold-soft); opacity:.7; font-weight:500;
+  transition:opacity .25s;
+}
+.product-card:hover .tap-hint-prod{ opacity:1; }
 
 /* ===== Modal ===== */
 .overlay{
@@ -563,7 +569,7 @@ function openProducts(id, title){
     const el = document.createElement('div');
     el.className = 'product-card glass';
     el.onclick = ()=>openModal(p);
-    el.innerHTML = `<div class="thumb">${thumbContent(p)}</div><h4>${p.name}</h4><div class="price">₪${p.price.toLocaleString()}</div>`;
+    el.innerHTML = `<div class="thumb">${thumbContent(p)}</div><h4>${p.name}</h4><div class="price">₪${p.price.toLocaleString()}</div><span class="tap-hint-prod">לחץ כאן לפרטים</span>`;
     grid.appendChild(el);
   });
   window.scrollTo({top:0, behavior:'smooth'});
