@@ -475,6 +475,7 @@ function hideAllViews(){
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('subcat-view').style.display = 'none';
   document.getElementById('products-view').style.display = 'none';
+  document.querySelector('.hamburger-btn').style.display = 'none';
 }
 
 // פותח צומת כלשהו בעץ - אם יש לו children מציג עוד ריבועים, אחרת מציג מוצרים
@@ -537,6 +538,7 @@ function goHome(){
   navStack = [];
   hideAllViews();
   document.getElementById('home-view').style.display = 'block';
+  document.querySelector('.hamburger-btn').style.display = 'flex';
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
