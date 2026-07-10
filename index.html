@@ -11,16 +11,16 @@
    ⚙️  אזור עריכה מהירה — שנה כאן צבעים, שם החנות ופרטי קשר
    ============================================================ */
 :root{
-  --deep-blue:#050b1f;      /* רקע ראשי כהה - כחול-שחור עמוק */
-  --royal-blue:#0e2c63;     /* כחול ספיר עמוק ויוקרתי */
-  --royal-blue-2:#1e4fa3;   /* כחול קריסטלי בהיר יותר */
-  --accent-gold:#8a6a28;    /* זהב עמוק וברונזה - לא צהוב */
-  --accent-gold-soft:#c3a15c;
-  --accent-gold-shine:#f2e2b8; /* ברק זהב חם לגימור מתכתי */
+  --deep-blue:#02050d;      /* רקע ראשי כהה - כמעט שחור עם נגיעת כחול */
+  --royal-blue:#081b42;     /* כחול ספיר עמוק מאוד */
+  --royal-blue-2:#132f68;   /* כחול קריסטלי, עדיין כהה */
+  --accent-gold:#7d6425;    /* זהב עמוק וברונזה - לא צהוב */
+  --accent-gold-soft:#b0925a;
+  --accent-gold-shine:#e6d3a3; /* ברק זהב חם לגימור מתכתי */
   --accent-ice:#a8c6f0;     /* נגיעת כחול-קרח קריסטלי לברק עדין */
   --glass-bg:rgba(255,255,255,0.055);
   --glass-border:rgba(255,255,255,0.14);
-  --glass-border-hi:rgba(138,106,40,0.55);
+  --glass-border-hi:rgba(125,100,37,0.55);
   --text-main:#f4f6fb;
   --text-dim:#a8b3cc;
   --radius:22px;
@@ -31,9 +31,9 @@ body{
   font-family:'Heebo',sans-serif;
   display:flex; flex-direction:column;
   background:
-    radial-gradient(ellipse 100% 70% at 20% -10%, rgba(50,100,230,0.32), transparent 62%),
-    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(138,106,40,0.16), transparent 58%),
-    radial-gradient(ellipse 80% 55% at 50% 115%, rgba(138,106,40,0.10), transparent 60%),
+    radial-gradient(ellipse 100% 70% at 20% -10%, rgba(35,75,180,0.32), transparent 62%),
+    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(125,100,37,0.16), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 50% 115%, rgba(125,100,37,0.10), transparent 60%),
     linear-gradient(160deg, var(--deep-blue) 0%, var(--royal-blue) 55%, #061d2e 100%);
   background-attachment:fixed;
   color:var(--text-main);
@@ -53,7 +53,7 @@ body::before{
   position:fixed; inset:-20%; z-index:0; pointer-events:none;
   background:
     repeating-linear-gradient(115deg, rgba(201,162,75,0.035) 0px, rgba(201,162,75,0.035) 1px, transparent 1px, transparent 64px),
-    radial-gradient(circle at 20% 30%, rgba(70,120,235,0.20), transparent 42%),
+    radial-gradient(circle at 20% 30%, rgba(50,95,190,0.20), transparent 42%),
     radial-gradient(circle at 85% 70%, rgba(201,162,75,0.16), transparent 42%),
     radial-gradient(circle at 50% 100%, rgba(201,162,75,0.10), transparent 45%);
   filter:blur(60px);
@@ -83,7 +83,7 @@ body::before{
   font-family:'Cormorant Garamond', serif;
   cursor:pointer;
   color:var(--accent-gold-soft);
-  text-shadow:0 1px 1px rgba(0,0,0,0.35), 0 0 24px rgba(138,106,40,0.45);
+  text-shadow:0 1px 1px rgba(0,0,0,0.35), 0 0 24px rgba(125,100,37,0.45);
 }
 .logo-icon{ width:2.9rem; height:2.9rem; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.1; flex-shrink:0; }
 .logo .lg-black{ font-size:3.9rem; font-weight:800; line-height:1; }
@@ -109,11 +109,11 @@ body::before{
 .back-btn{
   display:inline-flex; align-items:center; gap:6px;
   color:var(--accent-gold-soft); background:rgba(255,255,255,0.04);
-  border:1px solid rgba(138,106,40,0.3);
+  border:1px solid rgba(125,100,37,0.3);
   padding:8px 18px; border-radius:30px; cursor:pointer; font-size:.85rem;
   font-family:'Heebo',sans-serif; transition:.25s; margin-bottom:18px;
 }
-.back-btn:hover{ border-color:var(--accent-gold); background:rgba(138,106,40,0.1); }
+.back-btn:hover{ border-color:var(--accent-gold); background:rgba(125,100,37,0.1); }
 
 main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; padding:26px 18px 80px; flex:1 0 auto;}
 
@@ -138,11 +138,11 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 .cat-card:hover, .cat-card:active{
   transform:translateY(-6px) scale(1.015);
   border-color:var(--glass-border-hi);
-  box-shadow:0 20px 45px rgba(0,0,0,0.45), 0 0 0 1px rgba(138,106,40,0.25);
+  box-shadow:0 20px 45px rgba(0,0,0,0.45), 0 0 0 1px rgba(125,100,37,0.25);
 }
 .cat-card .icon{
   position:relative; opacity:.95; margin-bottom:8px;
-  filter:drop-shadow(0 0 10px rgba(138,106,40,0.35));
+  filter:drop-shadow(0 0 10px rgba(125,100,37,0.35));
 }
 .cat-card .icon svg{ width:26px; height:26px; stroke:var(--accent-gold-soft); fill:none; stroke-width:1.2; }
 .cat-photo{
@@ -165,7 +165,7 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 .cat-card h3{
   font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; margin-bottom:3px;
   color:var(--accent-gold-soft);
-  text-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 14px rgba(138,106,40,0.3);
+  text-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 14px rgba(125,100,37,0.3);
 }
 .cat-card span{ font-size:.72rem; color:var(--text-dim); }
 .cat-card .tap-hint{
@@ -251,6 +251,7 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 .modal h2{ font-family:'Cormorant Garamond',serif; font-size:1.7rem; margin-bottom:4px; }
 .modal .modal-price{ color:var(--accent-gold-soft); font-size:1.4rem; font-weight:700; margin-bottom:16px; }
 .spec-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+.info-content{ white-space:pre-wrap; color:var(--text-dim); line-height:1.8; font-size:.92rem; margin-bottom:22px; }
 .spec-row{
   display:flex; justify-content:space-between; font-size:.88rem;
   padding-bottom:9px; border-bottom:1px dashed var(--glass-border); color:var(--text-dim);
@@ -286,7 +287,7 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
   position:fixed; top:18px; right:18px; z-index:60;
   width:52px; height:52px; border-radius:50%;
   background:rgba(2,13,23,0.55); backdrop-filter:blur(12px);
-  border:1px solid rgba(138,106,40,0.35);
+  border:1px solid rgba(125,100,37,0.35);
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
   cursor:pointer; transition:border-color .25s, background .25s;
 }
@@ -305,7 +306,7 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
   width:78%; max-width:340px;
   background:linear-gradient(165deg, rgba(12,52,80,0.68), rgba(2,13,23,0.92));
   backdrop-filter:blur(22px) saturate(140%);
-  border-left:1px solid rgba(138,106,40,0.3);
+  border-left:1px solid rgba(125,100,37,0.3);
   box-shadow:-20px 0 50px rgba(0,0,0,0.4);
   padding:26px 22px;
   transform:translateX(105%);
@@ -420,6 +421,15 @@ footer b{ color:var(--accent-gold-soft); }
   <div class="modal glass" id="modalBox"></div>
 </div>
 
+<div class="overlay" id="infoOverlay" onclick="if(event.target===this)closeInfoPage()">
+  <div class="modal glass">
+    <div class="modal-handle"></div>
+    <h2 id="infoTitle"></h2>
+    <p id="infoContent" class="info-content"></p>
+    <button class="close-btn" onclick="closeInfoPage()">סגירה</button>
+  </div>
+</div>
+
 <script>
 // ⚙️ מספר הוואטסאפ של החנות - כתבו כאן עם קידומת מדינה, בלי + ובלי אפסים מובילים
 // לדוגמה: מספר ישראלי 050-123-4567 → יש לכתוב 972501234567
@@ -442,14 +452,19 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 // ---------- Side menu (hamburger) ----------
 const menuItemsBox = document.getElementById('menuItems');
-(typeof MENU_ITEMS!=='undefined' ? MENU_ITEMS : []).forEach(item=>{
-  const a = document.createElement('a');
-  a.className = 'menu-item';
-  a.href = item.url;
-  a.target = '_blank';
-  a.rel = 'noopener';
-  a.textContent = item.label;
-  menuItemsBox.appendChild(a);
+(typeof MENU_ITEMS!=='undefined' ? MENU_ITEMS : []).forEach((item, idx)=>{
+  const el = document.createElement(item.type==='page' ? 'button' : 'a');
+  el.className = 'menu-item';
+  if(item.type==='page'){
+    el.type = 'button';
+    el.onclick = ()=>openInfoPage(item);
+  } else {
+    el.href = item.url;
+    el.target = '_blank';
+    el.rel = 'noopener';
+  }
+  el.textContent = item.label;
+  menuItemsBox.appendChild(el);
 });
 function openMenu(){
   document.getElementById('menuOverlay').classList.add('open');
@@ -459,7 +474,18 @@ function closeMenu(){
   document.getElementById('menuOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMenu(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMenu(); closeInfoPage(); } });
+
+// דף מידע פנימי (למשל "אודות") - נפתח בתוך האתר, לא קישור חיצוני
+function openInfoPage(item){
+  document.getElementById('infoTitle').textContent = item.label;
+  document.getElementById('infoContent').textContent = item.content || '';
+  document.getElementById('infoOverlay').classList.add('open');
+  closeMenu();
+}
+function closeInfoPage(){
+  document.getElementById('infoOverlay').classList.remove('open');
+}
 
 // בונה כרטיס ריבוע (משמש גם לקטגוריות ראשיות וגם לתת-קטגוריות)
 function buildCard(c, onClick){
