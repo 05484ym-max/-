@@ -104,13 +104,13 @@ body::before{
   text-decoration:none; display:inline-flex; align-items:center; gap:7px;
 }
 .wa-btn:hover{ background:rgba(138,90,52,0.1); }
-.wa-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.6; }
+.wa-btn svg{ width:13px; height:13px; fill:currentColor; stroke:none; }
 .call-btn{
   background:transparent; border:1.5px solid var(--accent-gold-soft); color:var(--accent-gold-soft);
   text-decoration:none; display:inline-flex; align-items:center; gap:7px;
 }
 .call-btn:hover{ background:rgba(138,90,52,0.1); }
-.call-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.6; }
+.call-btn svg{ width:13px; height:13px; fill:currentColor; stroke:none; }
 .back-btn{
   display:inline-flex; align-items:center; gap:6px;
   color:var(--accent-gold-soft); background:rgba(255,255,255,0.04);
@@ -342,9 +342,9 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
   position:absolute; top:50%; right:100%; transform:translateY(-50%);
   margin-right:10px; white-space:nowrap;
   font-size:.66rem; font-weight:500; color:var(--accent-gold-soft); opacity:.8;
-  background:none; height:auto; width:auto; border-radius:0;
+  background:none; height:auto; width:auto; border-radius:0; border:none;
+  text-decoration:none; line-height:1; box-shadow:none; outline:none;
 }
-
 /* ===== Menu drawer ===== */
 .menu-overlay{
   position:fixed; inset:0; z-index:90;
@@ -449,6 +449,12 @@ footer b{ color:var(--accent-gold-soft); }
   <symbol id="icon-chat" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
     <path d="M4 4h16v12H8l-4 4z"></path>
   </symbol>
+  <symbol id="icon-phone-filled" viewBox="0 0 24 24">
+    <rect x="8" y="2" width="8" height="20" rx="4"></rect>
+  </symbol>
+  <symbol id="icon-chat-filled" viewBox="0 0 24 24">
+    <path d="M6 4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h1v3l4-3h7a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+  </symbol>
 </svg>
 
 <main>
@@ -460,8 +466,8 @@ footer b{ color:var(--accent-gold-soft); }
       </div>
       <p>המקום שלכם למכשירים, תיקונים ואבזרים ברמה הכי גבוהה</p>
       <div class="cta-row">
-        <button class="wa-btn" onclick="sendGeneralWhatsapp()"><svg><use href="#icon-chat"></use></svg>לחץ כאן לשליחת וואטסאפ</button>
-        <a class="call-btn" href="tel:0539872593"><svg><use href="#icon-phone"></use></svg>לחץ כאן לחיוג בטלפון</a>
+        <button class="wa-btn" onclick="sendGeneralWhatsapp()"><svg><use href="#icon-chat-filled"></use></svg>לחץ כאן לשליחת וואטסאפ</button>
+        <a class="call-btn" href="tel:0539872593"><svg><use href="#icon-phone-filled"></use></svg>לחץ כאן לחיוג בטלפון</a>
       </div>
     </div>
     <div class="grid" id="catGrid"></div>
