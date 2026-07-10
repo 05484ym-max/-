@@ -11,9 +11,9 @@
    ⚙️  אזור עריכה מהירה — שנה כאן צבעים, שם החנות ופרטי קשר
    ============================================================ */
 :root{
-  --deep-blue:#02050d;      /* רקע ראשי כהה - כמעט שחור עם נגיעת כחול */
-  --royal-blue:#0f2148;     /* כחול ספיר עמוק - מדגימה מהתמונה */
-  --royal-blue-2:#1c3a72;   /* כחול קריסטלי, עדיין כהה */
+  --deep-blue:#01030a;      /* רקע ראשי כהה - כמעט שחור עם נגיעת כחול */
+  --royal-blue:#081226;     /* כחול-שחור עמוק ואחיד */
+  --royal-blue-2:#0f2044;   /* כחול כהה משני, עדיין עמוק */
   --accent-gold:#8a5a34;    /* זהב אמיתי - מדגימה מהתמונה */
   --accent-gold-soft:#c99a5b;
   --accent-gold-shine:#f6c877; /* ברק זהב חם - מדגימה מהתמונה */
@@ -31,10 +31,10 @@ body{
   font-family:'Heebo',sans-serif;
   display:flex; flex-direction:column;
   background:
-    radial-gradient(ellipse 100% 70% at 20% -10%, rgba(35,75,180,0.32), transparent 62%),
-    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(138,90,52,0.16), transparent 58%),
-    radial-gradient(ellipse 80% 55% at 50% 115%, rgba(138,90,52,0.10), transparent 60%),
-    linear-gradient(160deg, var(--deep-blue) 0%, var(--royal-blue) 55%, #061d2e 100%);
+    radial-gradient(ellipse 100% 70% at 20% -10%, rgba(20,45,110,0.22), transparent 62%),
+    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(138,90,52,0.10), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 50% 115%, rgba(138,90,52,0.07), transparent 60%),
+    linear-gradient(160deg, #01030a 0%, #061527 55%, #01050c 100%);
   background-attachment:fixed;
   color:var(--text-main);
   min-height:100vh;
@@ -104,13 +104,13 @@ body::before{
   text-decoration:none; display:inline-flex; align-items:center; gap:7px;
 }
 .wa-btn:hover{ background:rgba(138,90,52,0.1); }
-.wa-btn svg{ width:13px; height:13px; fill:currentColor; stroke:none; }
+.wa-btn svg{ width:16px; height:16px; fill:currentColor; stroke:none; }
 .call-btn{
   background:transparent; border:1.5px solid var(--accent-gold-soft); color:var(--accent-gold-soft);
   text-decoration:none; display:inline-flex; align-items:center; gap:7px;
 }
 .call-btn:hover{ background:rgba(138,90,52,0.1); }
-.call-btn svg{ width:13px; height:13px; fill:currentColor; stroke:none; }
+.call-btn svg{ width:16px; height:16px; fill:currentColor; stroke:none; }
 .back-btn{
   display:inline-flex; align-items:center; gap:6px;
   color:var(--accent-gold-soft); background:rgba(255,255,255,0.04);
@@ -322,13 +322,6 @@ footer{ text-align:center; padding:30px 10px; color:var(--text-dim); font-size:.
 }
 .hamburger-btn:hover{ border-color:var(--accent-gold-soft); background:rgba(2,13,23,0.75); }
 .hamburger-btn span{ width:22px; height:1.8px; background:var(--accent-gold-soft); border-radius:2px; }
-.menu-hint{
-  position:absolute; top:50%; right:100%; transform:translateY(-50%);
-  margin-right:10px; white-space:nowrap;
-  font-size:.66rem; font-weight:500; color:var(--accent-gold-soft); opacity:.8;
-  background:none; height:auto; width:auto; border-radius:0; border:none;
-  text-decoration:none; line-height:1; box-shadow:none; outline:none;
-}
 /* ===== Menu drawer ===== */
 .menu-overlay{
   position:fixed; inset:0; z-index:90;
@@ -387,7 +380,6 @@ footer b{ color:var(--accent-gold-soft); }
 
 <button class="hamburger-btn" onclick="openMenu()" aria-label="תפריט">
   <span></span><span></span><span></span>
-  <span class="menu-hint">לחץ לתפריט →</span>
 </button>
 
 <div class="menu-overlay" id="menuOverlay" onclick="if(event.target===this)closeMenu()">
