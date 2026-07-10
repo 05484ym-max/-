@@ -124,8 +124,14 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 /* ===== Hero ===== */
 .hero{ text-align:center; padding:58px 10px 48px; position:relative; }
 #home-view{ position:relative; }
-.hero .logo{ margin-bottom:16px; }
+.hero .logo{ margin-bottom:6px; }
 .hero p{color:var(--text-dim); font-size:1rem; max-width:480px; margin:0 auto;}
+.hero-tagline{
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:600;
+  font-size:1.15rem; letter-spacing:2px; margin-top:2px !important;
+  background:linear-gradient(180deg, var(--accent-gold-shine) 0%, var(--accent-gold-soft) 50%, var(--accent-gold) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
+}
 
 /* ===== Category Grid (home) ===== */
 .grid{
@@ -176,10 +182,10 @@ main{position:relative; z-index:1; max-width:1180px; width:100%; margin:0 auto; 
 }
 .cat-card span{ font-size:.72rem; color:var(--text-dim); }
 .cat-card .tap-hint{
-  display:block; margin-top:8px; font-size:.66rem; letter-spacing:.5px;
+  display:block; margin-top:6px; font-size:.56rem; letter-spacing:.4px;
   background:linear-gradient(180deg, var(--accent-gold-shine) 0%, var(--accent-gold-soft) 50%, var(--accent-gold) 100%);
   -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
-  opacity:.85; font-weight:500;
+  opacity:.7; font-weight:300;
   transition:opacity .25s, transform .25s;
 }
 .cat-card:hover .tap-hint{ opacity:1; transform:translateX(-3px); }
@@ -465,7 +471,7 @@ footer b{ color:var(--accent-gold-soft); }
         <svg class="logo-icon"><use href="#icon-phone"></use></svg>
         <span class="lg-black gold-metal">Black</span><span class="lg-phone gold-metal">phone</span>
       </div>
-      <p>המקום שלכם למכשירים, תיקונים ואבזרים ברמה הכי גבוהה</p>
+      <p class="hero-tagline">המרכז לתקשורת סלולרית</p>
       <div class="cta-row">
         <button class="wa-btn" onclick="sendGeneralWhatsapp()" aria-label="שליחת וואטסאפ"><svg><use href="#icon-chat-filled"></use></svg></button>
         <a class="call-btn" href="tel:0539872593" aria-label="חיוג בטלפון"><svg><use href="#icon-rotary-phone"></use></svg></a>
@@ -567,7 +573,7 @@ function buildCard(c, onClick){
   const visual = c.img
     ? `<div class="cat-photo" style="background-image:url('${c.img.replace(/'/g,"\\'")}')"></div><div class="cat-overlay"></div>`
     : `<div class="shine"></div><div class="icon"><svg><use href="#${categoryIcon(c.id)}"></use></svg></div>`;
-  el.innerHTML = `${visual}<h3>${c.title}</h3>`;
+  el.innerHTML = `${visual}<h3>${c.title}</h3><span class="tap-hint">לחץ כאן</span>`;
   return el;
 }
 
