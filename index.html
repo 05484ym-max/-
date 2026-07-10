@@ -11,13 +11,13 @@
    ⚙️  אזור עריכה מהירה — שנה כאן צבעים, שם החנות ופרטי קשר
    ============================================================ */
 :root{
-  --deep-blue:#020d17;      /* רקע ראשי כהה - כמעט שחור-תכלת */
-  --royal-blue:#0c3450;     /* תכלת עמוק יוקרתי */
-  --royal-blue-2:#175a80;   /* תכלת-כחול משני, בהיר יותר */
+  --deep-blue:#050b1f;      /* רקע ראשי כהה - כחול-שחור עמוק */
+  --royal-blue:#0e2c63;     /* כחול ספיר עמוק ויוקרתי */
+  --royal-blue-2:#1e4fa3;   /* כחול קריסטלי בהיר יותר */
   --accent-gold:#8a6a28;    /* זהב עמוק וברונזה - לא צהוב */
   --accent-gold-soft:#c3a15c;
   --accent-gold-shine:#f2e2b8; /* ברק זהב חם לגימור מתכתי */
-  --accent-ice:#8fd3e8;     /* נגיעת תכלת-קרח לברק עדין */
+  --accent-ice:#a8c6f0;     /* נגיעת כחול-קרח קריסטלי לברק עדין */
   --glass-bg:rgba(255,255,255,0.055);
   --glass-border:rgba(255,255,255,0.14);
   --glass-border-hi:rgba(138,106,40,0.55);
@@ -31,7 +31,7 @@ body{
   font-family:'Heebo',sans-serif;
   display:flex; flex-direction:column;
   background:
-    radial-gradient(ellipse 100% 70% at 20% -10%, rgba(50,160,210,0.32), transparent 62%),
+    radial-gradient(ellipse 100% 70% at 20% -10%, rgba(50,100,230,0.32), transparent 62%),
     radial-gradient(ellipse 90% 60% at 100% 0%, rgba(138,106,40,0.16), transparent 58%),
     radial-gradient(ellipse 80% 55% at 50% 115%, rgba(138,106,40,0.10), transparent 60%),
     linear-gradient(160deg, var(--deep-blue) 0%, var(--royal-blue) 55%, #061d2e 100%);
@@ -53,7 +53,7 @@ body::before{
   position:fixed; inset:-20%; z-index:0; pointer-events:none;
   background:
     repeating-linear-gradient(115deg, rgba(201,162,75,0.035) 0px, rgba(201,162,75,0.035) 1px, transparent 1px, transparent 64px),
-    radial-gradient(circle at 20% 30%, rgba(90,190,220,0.20), transparent 42%),
+    radial-gradient(circle at 20% 30%, rgba(70,120,235,0.20), transparent 42%),
     radial-gradient(circle at 85% 70%, rgba(201,162,75,0.16), transparent 42%),
     radial-gradient(circle at 50% 100%, rgba(201,162,75,0.10), transparent 45%);
   filter:blur(60px);
