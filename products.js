@@ -1,4 +1,4 @@
-/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 1:49:09 */
+/* קובץ מוצרים - BLACK PHONE - עודכן 10.7.2026, 9:13:30 */
 
 const CATEGORIES = [
   {
@@ -45,7 +45,23 @@ const CATEGORIES = [
     "id": "products",
     "title": "מוצרים",
     "sub": "מכשירים חדשים",
-    "img": ""
+    "img": "",
+    "children": [
+      {
+        "id": "cat_בוקסות_ורמקולים_nl9",
+        "title": "בוקסות ורמקולים",
+        "sub": "",
+        "img": "",
+        "children": [
+          {
+            "id": "cat_Jbl_g5e",
+            "title": "Jbl",
+            "sub": "",
+            "img": ""
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "cat_מסכים_dh3",
@@ -348,5 +364,7 @@ const PRODUCTS = {
       "specs": []
     }
   ],
-  "cat_גלאקסי_wwl": []
+  "cat_גלאקסי_wwl": [],
+  "cat_בוקסות_ורמקולים_nl9": [],
+  "cat_Jbl_g5e": []
 };
